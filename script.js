@@ -199,25 +199,36 @@ function onMouseClick(event) {
 
 window.addEventListener('click', onMouseClick, false);
 
-// ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
-function updateSize() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const aspectRatio = width / height;
 
-    // カメラのアスペクト比を更新
-    camera.aspect = aspectRatio;
-    camera.updateProjectionMatrix();
+// カードのサイズをウィンドウサイズに応じて調整する関数
+function resizeCards() {
+    const maxCardWidth = window.innerWidth * 0.9; // 画面の横幅の90%
+    const maxCardHeight = window.innerHeight * 0.9; // 画面の縦幅の90%
+    const cardAspectRatio = 16 / 9;
+    let cardWidth = cardAspectRatio * maxCardHeight;
+    let cardHeight = maxCardHeight;
 
-    // レンダラーのサイズを更新
-    renderer.setSize(width, height);
+    if (cardWidth > maxCardWidth) {
+        // カードの幅が最大幅を超える場合、幅を基準にサイズを調整する
+        cardWidth = maxCardWidth;
+        cardHeight = cardWidth / cardAspectRatio;
+    }
+
+    // カードのジオメトリを更新
+    cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
+
+    // すべてのカードのメッシュを更新
+    cards.forEach((card, index) => {
+        card.geometry.dispose(); // 古いジオメトリを削除
+        card.geometry = cardGeometry; // 新しいジオメトリを設定
+    });
+
+    updateCardPositions(currentIndex); // カードの位置を更新
 }
 
-// ウィンドウリサイズイベントのハンドラー
-window.addEventListener('resize', () => {
-    updateSize();
-    updateCardPositions(currentIndex); // カードの位置も更新
-});
+// ウィンドウのリサイズイベントでカードのリサイズ関数を呼び出す
+window.addEventListener('resize', resizeCards);
+
 
 // 初期サイズの設定
 updateSize();
