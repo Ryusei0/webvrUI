@@ -1,6 +1,105 @@
-body { margin: 0; }
+body {
+    margin: 0;
+      /* overflow: hidden;   */
+    font-family: Arial, sans-serif;
+    -webkit-text-size-adjust: 100%; /* 横向きモードでのフォントスケーリングを防ぐ */
+}
+/* 要素が画面幅を超えないようにする */
+html, body, #videoSliderContainer {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+/* 入力コンテナのスタイル */
+#inputContainer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: calc(100% - 40px); /* 画面幅に応じて最大幅を設定 */
+    box-sizing: border-box; /* 要素の全幅にパディングとボーダーを含める */
+}
 
-canvas { display: block; }
+/* テキスト入力フィールドのスタイル */
+#userInput {
+    flex: 1;
+    margin-right: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+}
+
+/* 送信ボタンのスタイル */
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #ffffff;
+    border-radius: 15px;
+    cursor: pointer;
+    min-width: 44px; /* タップターゲットがモバイルで十分な大きさになるようにする */
+    min-height: 44px; /* タップターゲットがモバイルで十分な大きさになるようにする */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* 返答コンテナのスタイル */
+#responseContainer {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none; /* 初期状態では非表示 */
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: calc(100% - 40px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+    z-index: 999;
+}
+
+/* 返答表示/非表示切り替えボタンのスタイル */
+#toggleResponse {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000; /* 必ず最前面に */
+}
+
+#toggleResponse:hover {
+    background-color: #0056b3;
+}
+
+#videoSliderContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    display: flex;
+    justify-content: space-around; /* 子要素をコンテナの中で均等に分散させる */
+    align-items: center;
+    padding: 0 10px;
+    width: 95%; /* コンテナの幅を画面の90%に設定 */
+    max-width: 960px; /* 最大幅を設定して、大きすぎないようにする */
+    min-width: 300px; /* 最小幅を設定して、小さすぎないようにする */
+}
 
 #slideLeft, #slideRight {
     position: fixed; /* 画面に対して固定位置を指定 */
@@ -14,4 +113,54 @@ canvas { display: block; }
 
 #slideRight {
     right: 0; /* 画面の右端に配置 */
+}
+
+/* iOS Safariで、キーボードを閉じた後にビューポートが縮小するのを防ぐ */
+input,
+textarea,
+select {
+    font-size: 16px; /* iOSでのフォーカス時のズームを防ぐ */
+}
+
+/* 横向き時の調整 */
+@media (orientation: landscape) {
+    #videoSliderContainer {
+        bottom: 20px; /* レイアウトに基づいて調整 */
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* スマホ表示のためのスタイル調整 */
+    #inputContainer, #responseContainer {
+        max-width: calc(100% - 20px);
+        padding: 8px;
+    }
+
+    #userInput, button {
+        padding: 8px 16px;
+    }
+    
+    #videoSliderContainer {
+        bottom: 70px; /* 画面の下部から適切な距離に配置 */
+        left: 0;
+        right: 0;
+        top: auto;
+        transform: none; /* 中央配置の変更を解除 */
+        justify-content: space-between; /* ボタンをコンテナの両端に配置 */
+    }
+
+    #slideLeft, #slideRight {
+        position: absolute; /* コンテナ内の絶対位置指定 */
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    #slideLeft {
+        left: 10px; /* コンテナの左端に配置 */
+    }
+
+    #slideRight {
+        right: 10px; /* コンテナの右端に配置 */
+    }
 }

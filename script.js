@@ -254,3 +254,138 @@ window.addEventListener('resize', resizeCards);
 
 // アニメーションループの開始
 animate();
+
+document.getElementById('sendButton').addEventListener('click', sendInput);
+document.getElementById('toggleResponse').addEventListener('click', toggleResponse);
+    // 他のイベントリスナーも同様に設定
+
+
+// ビューポートをリセットする関数
+function resetViewport() {
+    let viewportMeta = document.querySelector("meta[name=viewport]");
+    if (!viewportMeta) {
+        viewportMeta = document.createElement("meta");
+        viewportMeta.name = "viewport";
+        document.getElementsByTagName("head")[0].appendChild(viewportMeta);
+    }
+    viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0");
+}
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 8, 8);
+camera.lookAt(new THREE.Vector3(0, 8, 0)); 
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0xffffff);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.zoomSpeed = 0.5;
+controls.update();
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+directionalLight.position.set(0, 4, 1);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+const planeGeometry = new THREE.PlaneGeometry(20, 20);
+const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
+const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+plane.rotation.x = -Math.PI / 2;
+plane.position.y = -1;
+plane.receiveShadow = true;
+scene.add(plane);
+
+const loader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
+loader.setDRACOLoader(dracoLoader);
+
+let mixer;
+
+loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gltf', function (gltf) {
+    scene.add(gltf.scene);
+    gltf.scene.scale.set(0.05, 0.05, 0.05);
+    gltf.scene.traverse(function (node) {
+        if (node.isMesh) { node.castShadow = true; }
+    });
+    mixer = new THREE.AnimationMixer(gltf.scene);
+    if (gltf.animations.length) {
+        gltf.animations.forEach((clip) => {
+            mixer.clipAction(clip).play();
+        });
+    }
+}, undefined, function (error) {
+    console.error(error);
+});
+
+const clock = new THREE.Clock();
+
+function animate() {
+    requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+    if (mixer) mixer.update(delta);
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', onWindowResize, false);
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function sendInput() {
+            var userInput = document.getElementById('userInput').value;
+            var responseContainer = document.getElementById('responseContainer');
+        
+            // 送信直後にテキストボックスをクリア
+            document.getElementById('userInput').value = '';
+        
+            fetch('https://webchat-yghl.onrender.com/submit-query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({input_text: userInput})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                responseContainer.textContent = 'エラーが発生しました。';  // エラーをページに表示
+            })
+            .finally(() => {
+                // フォーカスを外して画面のズームをリセットする
+                document.getElementById('userInput').blur();
+        
+                // 必要に応じてビューポートをリセットする
+                resetViewport();
+            });
+        }
+        
+        
+
+
+        function toggleResponse() {
+           var responseContainer = document.getElementById('responseContainer');
+           var toggleButton = document.getElementById('toggleResponse');
+           if (responseContainer.style.display === 'none') {
+            responseContainer.style.display = 'block';
+            toggleButton.textContent = '返答を隠す';
+           } else {
+            responseContainer.style.display = 'none';
+            toggleButton.textContent = '返答を表示';
+           }
+        }
