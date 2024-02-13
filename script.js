@@ -21,7 +21,6 @@ const cards = [];
 const cardNames = []; // カード名のための配列を準備
 const loader = new FontLoader();
 
-
 // フォントを読み込み、テキストジオメトリを作成
 loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
     for (let i = 0; i < numberOfCards; i++) {
@@ -46,6 +45,9 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
         scene.add(textMesh);
         cardNames.push(textMesh);
     }
+    
+    // 全てのカードとテキストメッシュが生成された後、初期位置を設定
+    updateCardPositions(0);
 });
 
 // カードの位置とサイズを更新する関数
@@ -78,10 +80,6 @@ function updateCardPositions(index) {
         text.scale.set(scale, scale, scale); // テキストも大きく表示
     }
 }
-
-// 初期の中央カードをセット
-let currentIndex = 0;
-updateCardPositions(currentIndex);
 
 // ボタンイベントハンドラー
 document.getElementById('slideLeft').addEventListener('click', () => {
