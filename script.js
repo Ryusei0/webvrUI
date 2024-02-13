@@ -8,6 +8,9 @@ scene.background = new THREE.Color(0xffffff);
 
 // アスペクト比を設定
 const aspectRatio = 16 / 9;
+const windowWidth = window.innerWidth;
+const windowHeight = window.innerWidth / aspectRatio;
+
 const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 camera.position.z = 50;
 
