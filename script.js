@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
 
 // シーン、カメラ、レンダラーの設定
 const scene = new THREE.Scene();
@@ -33,7 +35,7 @@ const radius = 30;
 const videoTextures = [];
 const cardWidth = 16;
 const cardHeight = 9;
-const cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
+let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
 
