@@ -6,6 +6,8 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 
+// アスペクト比を設定
+const aspectRatio = 16 / 9;
 const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 camera.position.z = 50;
 
