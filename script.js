@@ -18,8 +18,8 @@ const radius = 30; // 円の半径
 const cardGeometry = new THREE.PlaneGeometry(5, 8); // カードのサイズ
 const cardMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // カードを黒に設定
 const cards = [];
-const cardNames = [];
-const loader = new FontLoader();
+const cardNames = []; // カード名のための配列を準備
+
 
 // フォントを読み込み、テキストジオメトリを作成
 loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
@@ -47,28 +47,50 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
     }
 });
 
-// カードの位置を更新する関数
-function updateCardPositions(direction) {
-    // カードの位置を配列で回転させる
-    if (direction > 0) {
-        cards.unshift(cards.pop()); // 右に移動
-        cardNames.unshift(cardNames.pop()); // テキストも同様に
-    } else {
-        cards.push(cards.shift()); // 左に移動
-        cardNames.push(cardNames.shift()); // テキストも同様に
-    }
-
-    // 新しい位置にカードを配置
+// カードの位置とサイズを更新する関数
+function updateCardPositions(index) {
+    const cardOffset = Math.PI / numberOfCards; // カード間の角度
     for (let i = 0; i < numberOfCards; i++) {
-        const theta = (i / numberOfCards) * Math.PI * 2;
-        const x = radius * Math.cos(theta);
-        const z = radius * Math.sin(theta);
-        cards[i].position.set(x, 0, z);
-        cards[i].lookAt(camera.position);
-        cardNames[i].position.set(x, 5, z); // テキストの位置を更新
-        cardNames[i].lookAt(camera.position);
+        const theta = (i / numberOfCards) * Math.PI * 2 + cardOffset;
+        const phi = theta - Math.PI / 2; // 中央のカードが向かい合うように調整
+
+        // 円周上の位置を計算
+        const x = radius * Math.cos(phi);
+        const z = radius * Math.sin(phi);
+        const card = cards[i];
+
+        // 中央にあるカードを大きくし、他は元のサイズにする
+        const scale = (i === index) ? 1.2 : 1; // 中央のカードを大きく表示
+        card.scale.set(scale, scale, scale);
+
+        // 中央に来たカードを前に移動
+        const zOffset = (i === index) ? -5 : 0;
+        card.position.set(x, 0, z + zOffset);
+
+        // カードが常にカメラの方向を向くようにする
+        card.lookAt(camera.position);
+
+        // カード名のテキストも同様に更新
+        const text = cardNames[i];
+        text.position.set(x, 5, z + zOffset);
+        text.lookAt(camera.position);
+        text.scale.set(scale, scale, scale); // テキストも大きく表示
     }
 }
+
+// 初期の中央カードをセット
+let currentIndex = 0;
+updateCardPositions(currentIndex);
+
+// ボタンイベントハンドラー
+document.getElementById('slideLeft').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % numberOfCards;
+    updateCardPositions(currentIndex);
+});
+document.getElementById('slideRight').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + numberOfCards) % numberOfCards;
+    updateCardPositions(currentIndex);
+});
 
 // レンダリング関数
 function render() {
@@ -76,19 +98,4 @@ function render() {
     renderer.render(scene, camera);
 }
 
-// レンダリングループを開始
 render();
-
-// ボタンのイベントリスナーを追加
-document.getElementById('slideLeft').addEventListener('click', () => updateCardPositions(1));
-document.getElementById('slideRight').addEventListener('click', () => updateCardPositions(-1));
-
-// ウィンドウリサイズイベント
-window.addEventListener('resize', onWindowResize, false);
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
