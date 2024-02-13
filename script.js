@@ -6,11 +6,6 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 
-// アスペクト比を設定
-const aspectRatio = 19 / 9;
-const windowWidth = window.innerWidth;
-const windowHeight = window.innerWidth / aspectRatio;
-
 const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 camera.position.z = 50;
 
@@ -31,8 +26,9 @@ const cards = [];
 let currentIndex = 0;
 const radius = 30;
 const videoTextures = [];
-const cardGeometry = new THREE.PlaneGeometry(5, 8 * aspectRatio); // カードのジオメトリもアスペクト比に合わせて変更
-
+const cardWidth = 16;
+const cardHeight = 9;
+const cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
 
