@@ -13,6 +13,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // カードの配置を円形にする
+let currentIndex = 0;
 const numberOfCards = 10;
 const radius = 30; // 円の半径
 const cardGeometry = new THREE.PlaneGeometry(5, 8); // カードのサイズ
@@ -45,8 +46,6 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
         scene.add(textMesh);
         cardNames.push(textMesh);
     }
-    
-    let currentIndex = 0; // currentIndexをここで初めて定義
     updateCardPositions(currentIndex);
 });
 
