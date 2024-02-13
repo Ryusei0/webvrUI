@@ -19,6 +19,7 @@ const cardGeometry = new THREE.PlaneGeometry(5, 8); // カードのサイズ
 const cardMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // カードを黒に設定
 const cards = [];
 const cardNames = []; // カード名のための配列を準備
+const loader = new FontLoader();
 
 
 // フォントを読み込み、テキストジオメトリを作成
