@@ -46,39 +46,36 @@ loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json
         cardNames.push(textMesh);
     }
     
-    // 全てのカードとテキストメッシュが生成された後、初期位置を設定
-    updateCardPositions(0);
+    let currentIndex = 0; // currentIndexをここで初めて定義
+    updateCardPositions(currentIndex);
 });
 
 // カードの位置とサイズを更新する関数
 function updateCardPositions(index) {
-    const cardOffset = Math.PI / numberOfCards; // カード間の角度
-    for (let i = 0; i < numberOfCards; i++) {
-        const theta = (i / numberOfCards) * Math.PI * 2 + cardOffset;
-        const phi = theta - Math.PI / 2; // 中央のカードが向かい合うように調整
-
-        // 円周上の位置を計算
-        const x = radius * Math.cos(phi);
-        const z = radius * Math.sin(phi);
-        const card = cards[i];
-
-        // 中央にあるカードを大きくし、他は元のサイズにする
-        const scale = (i === index) ? 1.2 : 1; // 中央のカードを大きく表示
-        card.scale.set(scale, scale, scale);
-
-        // 中央に来たカードを前に移動
-        const zOffset = (i === index) ? -5 : 0;
-        card.position.set(x, 0, z + zOffset);
-
-        // カードが常にカメラの方向を向くようにする
+    const cardOffset = 2 * Math.PI / numberOfCards; // カード間の角度
+    cards.forEach((card, i) => {
+        const angle = cardOffset * (i - index) + Math.PI / 2; // indexを中心に配置
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+        card.position.set(x, 0, z);
         card.lookAt(camera.position);
 
-        // カード名のテキストも同様に更新
-        const text = cardNames[i];
-        text.position.set(x, 5, z + zOffset);
+        // カードのスケールを更新
+        const scale = (i === index) ? 1.5 : 1; // 中央のカードを大きく表示
+        card.scale.set(scale, scale, scale);
+    });
+
+    cardNames.forEach((text, i) => {
+        const angle = cardOffset * (i - index) + Math.PI / 2; // indexを中心に配置
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+        text.position.set(x, 5, z);
         text.lookAt(camera.position);
-        text.scale.set(scale, scale, scale); // テキストも大きく表示
-    }
+
+        // テキストのスケールを更新
+        const scale = (i === index) ? 1.5 : 1; // 中央のテキストを大きく表示
+        text.scale.set(scale, scale, scale);
+    });
 }
 
 // ボタンイベントハンドラー
