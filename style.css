@@ -1,0 +1,17 @@
+body { margin: 0; }
+
+canvas { display: block; }
+
+#slideLeft, #slideRight {
+    position: fixed; /* 画面に対して固定位置を指定 */
+    top: 50%; /* 画面の垂直中央に配置 */
+    transform: translateY(-50%); /* Y軸方向の中心に配置 */
+}
+
+#slideLeft {
+    left: 0; /* 画面の左端に配置 */
+}
+
+#slideRight {
+    right: 0; /* 画面の右端に配置 */
+}

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // シーン、カメラ、レンダラーの設定
 const scene = new THREE.Scene();
@@ -15,42 +14,45 @@ const radius = 30; // 円の半径
 const cardGeometry = new THREE.PlaneGeometry(5, 8); // カードのサイズ
 const cardMaterial = new THREE.MeshBasicMaterial({ color: 0xdddddd });
 const cards = [];
+const cardPositions = [];
 for (let i = 0; i < numberOfCards; i++) {
     const theta = (i / numberOfCards) * Math.PI * 2; // 角度
     const x = radius * Math.cos(theta);
-    const y = radius * Math.sin(theta);
+    const z = radius * Math.sin(theta);
     const card = new THREE.Mesh(cardGeometry, cardMaterial);
-    card.position.set(x, y, -i * 0.1); // 奥行きを微調整
-    card.rotation.y = Math.PI - theta; // カードが中心を向くように回転
+    card.position.set(x, 0, z); // y軸は0とする
+    card.lookAt(camera.position); // カードがカメラを向くように回転
     scene.add(card);
     cards.push(card);
+    cardPositions.push(new THREE.Vector3(x, 0, z));
+}
+
+// カードの並びを更新する関数
+function updateCardPositions(direction) {
+    // カードの位置を配列で回転させる
+    if (direction > 0) {
+        cardPositions.unshift(cardPositions.pop()); // 右に移動
+    } else {
+        cardPositions.push(cardPositions.shift()); // 左に移動
+    }
+
+    // 新しい位置にカードを配置
+    for (let i = 0; i < numberOfCards; i++) {
+        cards[i].position.set(cardPositions[i].x, cardPositions[i].y, cardPositions[i].z);
+        cards[i].lookAt(camera.position);
+    }
 }
 
 // レンダリング関数
 function render() {
+    requestAnimationFrame(render);
     renderer.render(scene, camera);
 }
 
-// カードの位置を更新する関数
-function updateCardPositions(direction) {
-    // 各カードの位置を更新
-    cards.forEach(card => {
-        const theta = Math.atan2(card.position.y, card.position.x) + direction * (Math.PI / numberOfCards);
-        const x = radius * Math.cos(theta);
-        const y = radius * Math.sin(theta);
-        card.position.set(x, y, card.position.z);
-        card.rotation.y = Math.PI - theta;
-    });
-    
-    // 奥行きをソートして更新
-    cards.sort((a, b) => b.position.z - a.position.z);
-    cards.forEach((card, index) => {
-        card.position.z = -index * 0.1;
-    });
-}
-
-// ボタンイベント
-document.getElementById('slideLeft').addEventListener('click', () => updateCardPositions(1));
-document.getElementById('slideRight').addEventListener('click', () => updateCardPositions(-1));
+// DOMがロードされた後でイベントリスナーを追加
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('slideLeft').addEventListener('click', () => updateCardPositions(-1));
+    document.getElementById('slideRight').addEventListener('click', () => updateCardPositions(1));
+});
 
 render();
