@@ -91,9 +91,12 @@ function updateCardPositions(index) {
         card.position.set(x, 0, z);
         card.lookAt(camera.position);
 
-        // カードのスケールを更新
+        // カードが中央にある場合は、スケールを大きくして強調表示
         const scale = (i === index) ? 1.5 : 1; // 中央のカードを大きく表示
         card.scale.set(scale, scale, scale);
+
+        // userDataにカードの現在のインデックスを保存
+        card.userData.index = i;
     });
 
     // テキストメッシュの位置を更新
@@ -181,10 +184,15 @@ function onMouseClick(event) {
     if (intersects.length > 0) {
         const intersectedCard = intersects[0].object;
         const videoElement = intersectedCard.userData.videoElement;
-        if (videoElement.paused) {
-            videoElement.play();
-        } else {
-            videoElement.pause();
+
+        // クリックされたカードが現在中央にあるか確認
+        if (intersectedCard.userData.index === currentIndex) {
+            // ビデオの再生状態を切り替える
+            if (videoElement.paused) {
+                videoElement.play();
+            } else {
+                videoElement.pause();
+            }
         }
     }
 }
