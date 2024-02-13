@@ -322,22 +322,16 @@ loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gl
 
 const clock = new THREE.Clock();
 
-function animate() {
+function animates() {
     requestAnimationFrame(animate);
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
     renderer.render(scene, camera);
 }
 
-animate();
+animates();
 
 window.addEventListener('resize', onWindowResize, false);
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
 
 function sendInput() {
             var userInput = document.getElementById('userInput').value;
