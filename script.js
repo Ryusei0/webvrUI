@@ -199,6 +199,28 @@ function onMouseClick(event) {
 
 window.addEventListener('click', onMouseClick, false);
 
+// ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
+function updateSize() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const aspectRatio = width / height;
+
+    // カメラのアスペクト比を更新
+    camera.aspect = aspectRatio;
+    camera.updateProjectionMatrix();
+
+    // レンダラーのサイズを更新
+    renderer.setSize(width, height);
+}
+
+// ウィンドウリサイズイベントのハンドラー
+window.addEventListener('resize', () => {
+    updateSize();
+    updateCardPositions(currentIndex); // カードの位置も更新
+});
+
+// 初期サイズの設定
+updateSize();
 
 // カードのサイズをウィンドウサイズに応じて調整する関数
 function resizeCards() {
@@ -229,9 +251,6 @@ function resizeCards() {
 // ウィンドウのリサイズイベントでカードのリサイズ関数を呼び出す
 window.addEventListener('resize', resizeCards);
 
-
-// 初期サイズの設定
-updateSize();
 
 // アニメーションループの開始
 animate();
