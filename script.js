@@ -5,6 +5,9 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 // シーン、カメラ、レンダラーの設定
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 8, 8);
+camera.lookAt(new THREE.Vector3(0, 8, 0)); 
 
 // アスペクト比を設定
 const aspectRatio = 16 / 9;
@@ -267,10 +270,6 @@ function resetViewport() {
     }
     viewportMeta.setAttribute("content", "width=device-width, initial-scale=1.0");
 }
-
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 8, 8);
-camera.lookAt(new THREE.Vector3(0, 8, 0)); 
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xffffff);
