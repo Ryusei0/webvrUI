@@ -4,12 +4,19 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 // シーン、カメラ、レンダラーの設定
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffffff); // 背景を白に設定
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+scene.background = new THREE.Color(0xffffff);
+
+// アスペクト比を設定
+const aspectRatio = 19 / 9;
+const windowWidth = window.innerWidth;
+const windowHeight = window.innerWidth / aspectRatio;
+
+const camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
 camera.position.z = 50;
+
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(windowWidth, windowHeight);
 document.body.appendChild(renderer.domElement);
 
 const videos = [
@@ -20,15 +27,14 @@ const videos = [
     // 他の動画をここに追加
 ];
 
-// カードと動画テクスチャを格納する配列
 const cards = [];
 let currentIndex = 0;
-const radius = 30; 
+const radius = 30;
 const videoTextures = [];
-const cardGeometry = new THREE.PlaneGeometry(5, 8);
+const cardGeometry = new THREE.PlaneGeometry(5, 8 * aspectRatio); // カードのジオメトリもアスペクト比に合わせて変更
 
-const videoElements = []; // ビデオ要素を格納する配列を追加
-const textMeshes = []; // テキストメッシュを格納する配列を追加
+const videoElements = [];
+const textMeshes = [];
 
 // 各ビデオに対してカードを作成
 videos.forEach((video, index) => {
@@ -99,14 +105,14 @@ function updateCardPositions(index) {
     });
 }
 
-// フォントを読み込み、テキストジオメトリを作成
+// フォントのロード
 const fontLoader = new FontLoader();
-fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+fontLoader.load('path/to/japanese/font_regular.typeface.json', function (font) { // 日本語対応フォントのパス
     videos.forEach((video, index) => {
-        // ビデオテクスチャを作成
         const videoElement = document.createElement('video');
         videoElement.src = video.url;
         videoElement.crossOrigin = 'anonymous';
+        videoElement.preload = 'auto';
         videoElement.load();
         videoElements.push(videoElement);
 
@@ -115,17 +121,16 @@ fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
 
         const cardMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
         const card = new THREE.Mesh(cardGeometry, cardMaterial);
-
-        // カードを円形に配置
         const theta = (index / videos.length) * Math.PI * 2;
         const x = radius * Math.cos(theta);
         const z = radius * Math.sin(theta);
         card.position.set(x, 0, z);
         card.lookAt(camera.position);
+        card.userData = { videoElement: videoElement };
         scene.add(card);
         cards.push(card);
 
-        // ビデオ名のテキストメッシュを作成
+        // テキストメッシュの作成
         const textGeometry = new TextGeometry(video.name, {
             font: font,
             size: 0.5,
@@ -135,18 +140,17 @@ fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
         });
         const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
         const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-        textMesh.position.set(x, 5, z); // テキストの高さを適切に調整
+        textMesh.position.set(x, 5, z); // テキストの位置を適切に設定
         textMesh.lookAt(camera.position);
         scene.add(textMesh);
-        textMeshes[index] = textMesh; // textMeshes 配列にテキストメッシュを追加
+        textMeshes[index] = textMesh;
     });
 
-    // 初期のカード位置を更新
-    updateCardPositions(0);
+    updateCardPositions(0); // 初期位置の更新
 });
 
 
-// ボタンイベントハンドラー
+// イベントリスナー
 document.getElementById('slideLeft').addEventListener('click', () => {
     currentIndex = (currentIndex + 1) % videos.length;
     updateCardPositions(currentIndex);
@@ -156,7 +160,7 @@ document.getElementById('slideRight').addEventListener('click', () => {
     updateCardPositions(currentIndex);
 });
 
-// レンダリング関数
+// レンダリングループ
 function render() {
     requestAnimationFrame(render);
     renderer.render(scene, camera);
@@ -185,6 +189,20 @@ function onMouseClick(event) {
 }
 
 window.addEventListener('click', onMouseClick, false);
+
+// ウィンドウリサイズイベントのハンドラー
+window.addEventListener('resize', onWindowResize, false);
+
+function onWindowResize() {
+    // 新しいウィンドウサイズに基づいてアスペクト比を維持
+    const newWindowWidth = window.innerWidth;
+    const newWindowHeight = window.innerWidth / aspectRatio;
+
+    // カメラとレンダラーのサイズを更新
+    camera.aspect = aspectRatio;
+    camera.updateProjectionMatrix();
+    renderer.setSize(newWindowWidth, newWindowHeight);
+}
 
 // アニメーションループの開始
 animate();
