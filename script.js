@@ -20,8 +20,9 @@ function resetViewport() {
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 8, 8);
-camera.lookAt(new THREE.Vector3(0, 8, 0)); 
+const y = 5;
+camera.position.set(0, y, 5);
+camera.lookAt(new THREE.Vector3(0, y, 0)); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -58,7 +59,7 @@ let mixer;
 
 loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gltf', function (gltf) {
     scene.add(gltf.scene);
-    gltf.scene.scale.set(0.05, 0.05, 0.05);
+    gltf.scene.scale.set(0.04, 0.04, 0.04);
     gltf.scene.traverse(function (node) {
         if (node.isMesh) { node.castShadow = true; }
     });
@@ -130,7 +131,7 @@ videos.forEach((video, index) => {
     const theta = (index / videos.length) * Math.PI * 2;
     const x = radius * Math.cos(theta);
     const z = radius * Math.sin(theta);
-    card.position.set(x, 0, z);
+    card.position.set(x, y, z);
     card.lookAt(camera.position);
 
     // クリックイベントの追加
