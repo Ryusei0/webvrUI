@@ -381,22 +381,18 @@ function toggleResponse() {
  }
 
  // ハンバーガーメニューをクリックしたときのイベント
-document.querySelector('.hamburger-menu').addEventListener('click', function() {
-    document.getElementById('menuContent').style.display = document.getElementById('menuContent').style.display === 'block' ? 'none' : 'block';
+ document.querySelector('.hamburger-menu').addEventListener('click', function() {
+    const menuContent = document.getElementById('menuContent');
+    const overlay = document.getElementById('overlay');
+    
+    if (menuContent.style.display === 'block') {
+      menuContent.style.display = 'none';
+      overlay.style.display = 'none';
+    } else {
+      menuContent.style.display = 'block';
+      overlay.style.display = 'block';
+    }
   });
-  
-  // 情報の一覧を配列で
-  const infoArray = ["情報1", "情報2", "情報3", "情報4"];
-  
-  // 情報の一覧をリストに追加する関数
-  function populateInfoList() {
-    const list = document.getElementById('infoList');
-    infoArray.forEach(item => {
-      const listItem = document.createElement('li');
-      listItem.textContent = item;
-      list.appendChild(listItem);
-    });
-  }
   
   // ドキュメントが読み込まれた後に情報リストを追加
   document.addEventListener('DOMContentLoaded', populateInfoList);
