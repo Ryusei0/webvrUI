@@ -256,36 +256,28 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 // タッチイベントリスナーを追加
-window.addEventListener('touchend', onTouchEnd, false);
+// タッチイベントリスナーを追加
+window.addEventListener('touchend', function(event) {
+    // デフォルトのタッチイベントの動作を防ぐ
+    event.preventDefault();
 
-function onTouchEnd(event) {
-    // タッチイベントの座標を取得
-    if (event.touches.length > 0) {
-        var touch = event.touches[0];
+    // タッチされた位置を取得
+    if (event.changedTouches.length > 0) {
+        var touch = event.changedTouches[0];
         mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
     }
 
-    // クリックイベントと同様の処理を実行
-    onMouseClick(event);
-}
-
-function onMouseClick(event) {
-    // タッチイベントの場合は既に座標が設定されているため、マウスイベントの場合のみ座標を設定
-    if (!event.touches) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    }
-
-    // クリックされたオブジェクトを取得
+    // タッチイベントに基づいてオブジェクトを検出
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(cards);
 
+    // タッチされたカードのビデオを再生または一時停止
     if (intersects.length > 0) {
         const intersectedCard = intersects[0].object;
         const videoElement = intersectedCard.userData.videoElement;
 
-        // クリックされたカードが現在中央にあるか確認し、ビデオの再生状態を切り替える
+        // カードが現在中央にあるか確認し、ビデオの再生状態を切り替える
         if (intersectedCard.userData.index === currentIndex) {
             if (videoElement.paused) {
                 videoElement.play();
@@ -294,9 +286,9 @@ function onMouseClick(event) {
             }
         }
     }
-}
+}, false);
 
-window.addEventListener('click', onMouseClick, false);
+
 
 // ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
 function updateSize() {
