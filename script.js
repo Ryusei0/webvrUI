@@ -77,9 +77,20 @@ const clock = new THREE.Clock();
 window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    console.log('ウィンドウがリサイズされました'); // デバッグログ
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const aspectRatio = width / height;
+
+    // カメラのアスペクト比を更新
+    camera.aspect = aspectRatio;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // レンダラーのサイズを更新
+    renderer.setSize(width, height);
+
+    // カードの位置を更新
+    updateCardPositions(currentIndex);
 }
 
 
@@ -139,6 +150,10 @@ function animate() {
         if (texture.image.readyState === HTMLVideoElement.HAVE_ENOUGH_DATA) {
             texture.needsUpdate = true;
         }
+    });
+    // カードがカメラを向くように更新
+    cards.forEach((card) => {
+        card.lookAt(camera.position);
     });
 
     renderer.render(scene, camera);
