@@ -141,7 +141,8 @@ videos.forEach((video, index) => {
 // レンダリングループ
 function animate() {
     requestAnimationFrame(animate);
-    
+    const delta = clock.getDelta();
+    if (mixer) mixer.update(delta);
     // ビデオテクスチャを更新
     videoTextures.forEach((texture) => {
         if (texture.image.readyState === HTMLVideoElement.HAVE_ENOUGH_DATA) {
