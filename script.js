@@ -290,36 +290,36 @@ function render() {
 render();
 
 document.getElementById('playCenterVideo').addEventListener('click', function() {
-    // カメラの中央に最も近いカードを特定するロジック
-    let closestCardIndex = findClosestCardToCameraCenter();
-    // 中央のカードに関連付けられたビデオエレメントを取得
-    const centerVideoElement = cards[closestCardIndex].userData.videoElement;
+    // カメラから最も遠いカードを特定する
+    let furthestCardIndex = findFurthestCardFromCameraCenter();
+    // 最も遠いカードに関連付けられたビデオエレメントを取得
+    const furthestVideoElement = cards[furthestCardIndex].userData.videoElement;
 
     // ビデオの再生状態をチェックして、適切に制御
-    if (centerVideoElement.paused) {
-        centerVideoElement.play();
+    if (furthestVideoElement.paused) {
+        furthestVideoElement.play();
     } else {
-        centerVideoElement.pause();
+        furthestVideoElement.pause();
     }
 });
 
-function findClosestCardToCameraCenter() {
-    let closestIndex = 0;
-    let closestDistance = Infinity;
+function findFurthestCardFromCameraCenter() {
+    let furthestIndex = 0;
+    let furthestDistance = 0; // 最も遠い距離を格納する変数を初期化
 
-    // カメラの中央に最も近いカードを探索
+    // カメラから最も遠いカードを探索
     cards.forEach((card, index) => {
-        // カメラからカードまでの距離を計算
         const pos = card.position.clone().project(camera);
-        const distance = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.y, 2)); // カメラの視点からの距離を2D平面で計算
+        const distance = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.y, 2)); // 2D平面での距離を計算
 
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestIndex = index;
+        // これまでで最も遠い距離よりも遠ければ、そのインデックスと距離を更新
+        if (distance > furthestDistance) {
+            furthestDistance = distance;
+            furthestIndex = index;
         }
     });
 
-    return closestIndex; // 中央に最も近いカードのインデックスを返す
+    return furthestIndex; // 最も遠いカードのインデックスを返す
 }
 
 
