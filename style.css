@@ -164,3 +164,41 @@ select {
         right: 10px; /* コンテナの右端に配置 */
     }
 }
+
+/* ハンバーガーメニューのスタイリング */
+.hamburger-menu {
+    cursor: pointer;
+    display: inline-block;
+    width: 30px;
+    height: 25px;
+    position: relative;
+  }
+  
+  .bar {
+    background-color: #333;
+    height: 3px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    transition: 0.3s ease;
+  }
+  
+  .bar:nth-child(1) { top: 0; }
+  .bar:nth-child(2) { top: 11px; }
+  .bar:nth-child(3) { top: 22px; }
+  
+  /* メニュー内容のスタイリング */
+  .menu-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+  }
+  
+  /* リストアイテム */
+  #infoList li {
+    padding: 8px 0;
+  }
+  
