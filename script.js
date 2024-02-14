@@ -58,7 +58,7 @@ let mixer;
 
 loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gltf', function (gltf) {
     scene.add(gltf.scene);
-    gltf.scene.scale.set(0.06, 0.06, 0.06);
+    gltf.scene.scale.set(0.07, 0.07, 0.07);
     
     // モデルの位置を調整
     gltf.scene.position.y = -5; // Y軸（上下位置）を調整。モデルを下に移動させる
