@@ -45,7 +45,7 @@ const planeGeometry = new THREE.PlaneGeometry(20, 20);
 const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.rotation.x = -Math.PI / 2;
-plane.position.y = -1;
+plane.position.y = -3;
 plane.receiveShadow = true;
 scene.add(plane);
 
@@ -114,7 +114,7 @@ const radius = 8;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
-const cardcamera = y;
+const cardcamera = y/2;
 let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
