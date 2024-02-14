@@ -147,8 +147,48 @@ videos.forEach((video, index) => {
     cards.push(card);
 });
 
+// カメラの制限を設定/解除するためのフラグ
+let isCameraLocked = true;
+
+// カメラの垂直回転を制限する
+function lockCameraRotation() {
+    controls.minPolarAngle = Math.PI / 2; // 水平面のみ
+    controls.maxPolarAngle = Math.PI / 2; // 水平面のみ
+    isCameraLocked = true;
+}
+
+// カメラの垂直回転の制限を解除する
+function unlockCameraRotation() {
+    controls.minPolarAngle = 0; // 制限なし
+    controls.maxPolarAngle = Math.PI; // 制限なし
+    isCameraLocked = false;
+}
+
+// モデルがカメラを見続けるようにする
+function ensureModelFacesCamera() {
+    scene.traverse(function (node) {
+        if (node.isMesh) {
+            node.lookAt(camera.position);
+        }
+    });
+}
+
+// 機能の有効/無効を切り替えるボタンの追加
+document.getElementById('lockCameraButton').addEventListener('click', function() {
+    if (isCameraLocked) {
+        unlockCameraRotation();
+        this.textContent = 'カメラの回転制限を解除';
+    } else {
+        lockCameraRotation();
+        this.textContent = 'カメラの回転を水平平面に限定';
+    }
+});
+
 // レンダリングループ
 function animate() {
+    ensureModelFacesCamera(); // モデルがカメラを向くように更新
+    controls.update(); // 必要に応じてコントロールを更新
+    renderer.render(scene, camera);
     requestAnimationFrame(animate);
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
@@ -165,6 +205,9 @@ function animate() {
 
     renderer.render(scene, camera);
 }
+
+// 初期状態でカメラの回転を制限
+lockCameraRotation();
 
 // カードの位置とサイズを更新する関数
 function updateCardPositions(index) {
