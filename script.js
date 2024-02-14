@@ -105,10 +105,11 @@ const videos = [
 
 const cards = [];
 let currentIndex = 0;
-const radius = 10;
+const radius = 3;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
+const cardcamera = y/3;
 let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
@@ -131,7 +132,7 @@ videos.forEach((video, index) => {
     const theta = (index / videos.length) * Math.PI * 2;
     const x = radius * Math.cos(theta);
     const z = radius * Math.sin(theta);
-    card.position.set(x, y, z);
+    card.position.set(x, cardcamera, z);
     card.lookAt(camera.position);
 
     // クリックイベントの追加
