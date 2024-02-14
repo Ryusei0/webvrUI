@@ -74,15 +74,6 @@ loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gl
 
 const clock = new THREE.Clock();
 
-function animate() {
-    requestAnimationFrame(animate);
-    const delta = clock.getDelta();
-    if (mixer) mixer.update(delta);
-    renderer.render(scene, camera);
-}
-
-animate();
-
 window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize() {
@@ -152,8 +143,6 @@ function animate() {
 
     renderer.render(scene, camera);
 }
-
-animate();
 
 // カードの位置とサイズを更新する関数
 function updateCardPositions(index) {
