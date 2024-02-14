@@ -58,7 +58,12 @@ let mixer;
 
 loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gltf', function (gltf) {
     scene.add(gltf.scene);
-    gltf.scene.scale.set(0.04, 0.04, 0.04);
+    gltf.scene.scale.set(0.06, 0.06, 0.06);
+    
+    // モデルの位置を調整
+    gltf.scene.position.y = -2; // Y軸（上下位置）を調整。モデルを下に移動させる
+    gltf.scene.position.z = 2; // Z軸（前後位置）を調整。必要に応じて前後に移動
+
     gltf.scene.traverse(function (node) {
         if (node.isMesh) { node.castShadow = true; }
     });
@@ -71,6 +76,7 @@ loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gl
 }, undefined, function (error) {
     console.error(error);
 });
+
 
 const clock = new THREE.Clock();
 
@@ -108,7 +114,7 @@ const radius = 8;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
-const cardcamera = y/2;
+const cardcamera = y;
 let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
