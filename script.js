@@ -162,6 +162,8 @@ function animate() {
 
 // カードの位置とサイズを更新する関数
 function updateCardPositions(index) {
+    // 中央のカードを特定するために、現在のカメラの中心に最も近いカードを見つける
+    let closestCardIndex = findClosestCardToCameraCenter();
     const cardOffset = 2 * Math.PI / videos.length; // カード間の角度
     cards.forEach((card, i) => {
         const angle = cardOffset * (i - index) + Math.PI / 2; // indexを中心に配置
@@ -171,20 +173,18 @@ function updateCardPositions(index) {
         card.lookAt(camera.position);
 
          // カードが中央にある場合は、スケールを大きくして強調表示
-        const scale = (i === index) ? 1.5 : 1; // 中央のカードを大きく表示
+        const scale = (i === closestCardIndex) ? 1.5 : 1; // 中央のカードを大きく表示
         card.scale.set(scale, scale, scale);
 
         // userDataにカードの現在のインデックスを保存
         card.userData.index = i;
     });
 
-    // テキストメッシュの位置を更新
+    // テキストメッシュの位置を更新（必要に応じて）
     textMeshes.forEach((textMesh, i) => {
-        const angle = (2 * Math.PI / videos.length) * (i - index) + Math.PI / 2;
-        const x = radius * Math.cos(angle);
-        const z = radius * Math.sin(angle);
-        textMesh.position.set(x, cards[i].geometry.parameters.height / 2 + 0.5, z); // テキストの高さを適切に調整
-        textMesh.lookAt(camera.position);
+        // 中央のカードに関連するテキストメッシュの位置やサイズを調整
+        const scale = (i === closestCardIndex) ? 1.5 : 1;
+        textMesh.scale.set(scale, scale, scale); // テキストのスケールも調整
     });
 }
 
@@ -232,17 +232,6 @@ fontLoader.load('path/to/japanese/font_regular.typeface.json', function (font) {
     updateCardPositions(0); // 初期位置の更新
 });
 
-
-// イベントリスナー
-document.getElementById('slideLeft').addEventListener('click', () => {
-    currentIndex = (currentIndex + 1) % videos.length;
-    updateCardPositions(currentIndex);
-});
-document.getElementById('slideRight').addEventListener('click', () => {
-    currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-    updateCardPositions(currentIndex);
-});
-
 // レンダリングループ
 function render() {
     requestAnimationFrame(render);
@@ -251,10 +240,11 @@ function render() {
 
 render();
 
-// タッチイベントリスナーを追加
 document.getElementById('playCenterVideo').addEventListener('click', function() {
+    // カメラの中央に最も近いカードを特定するロジック
+    let closestCardIndex = findClosestCardToCameraCenter();
     // 中央のカードに関連付けられたビデオエレメントを取得
-    const centerVideoElement = cards[currentIndex].userData.videoElement;
+    const centerVideoElement = cards[closestCardIndex].userData.videoElement;
 
     // ビデオの再生状態をチェックして、適切に制御
     if (centerVideoElement.paused) {
@@ -263,6 +253,26 @@ document.getElementById('playCenterVideo').addEventListener('click', function() 
         centerVideoElement.pause();
     }
 });
+
+function findClosestCardToCameraCenter() {
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    // カメラの中央に最も近いカードを探索
+    cards.forEach((card, index) => {
+        // カメラからカードまでの距離を計算
+        const pos = card.position.clone().project(camera);
+        const distance = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.y, 2)); // カメラの視点からの距離を2D平面で計算
+
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+        }
+    });
+
+    return closestIndex; // 中央に最も近いカードのインデックスを返す
+}
+
 
 // ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
 function updateSize() {
