@@ -289,38 +289,40 @@ function render() {
 
 render();
 
-document.getElementById('playCenterVideo').addEventListener('click', function() {
-    // カメラから最も遠いカードを特定する
-    let furthestCardIndex = findFurthestCardFromCameraCenter();
-    // 最も遠いカードに関連付けられたビデオエレメントを取得
-    const furthestVideoElement = cards[furthestCardIndex].userData.videoElement;
+// カメラの中心に最も近いカードを見つける関数
+function findClosestCardToCameraCenter() {
+    let closestIndex = 0;
+    let closestDistance = Infinity; // 最も近い距離を格納する変数を初期化
 
-    // ビデオの再生状態をチェックして、適切に制御
-    if (furthestVideoElement.paused) {
-        furthestVideoElement.play();
-    } else {
-        furthestVideoElement.pause();
-    }
-});
-
-function findFurthestCardFromCameraCenter() {
-    let furthestIndex = 0;
-    let furthestDistance = 0; // 最も遠い距離を格納する変数を初期化
-
-    // カメラから最も遠いカードを探索
+    // カメラの中心に最も近いカードを探索
     cards.forEach((card, index) => {
         const pos = card.position.clone().project(camera);
-        const distance = Math.sqrt(Math.pow(pos.x, 2) + Math.pow(pos.y, 2)); // 2D平面での距離を計算
+        const distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y); // 2D平面での距離を計算
 
-        // これまでで最も遠い距離よりも遠ければ、そのインデックスと距離を更新
-        if (distance > furthestDistance) {
-            furthestDistance = distance;
-            furthestIndex = index;
+        // これまでで最も近い距離よりも近ければ、そのインデックスと距離を更新
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
         }
     });
 
-    return furthestIndex; // 最も遠いカードのインデックスを返す
+    return closestIndex; // 最も近いカードのインデックスを返す
 }
+
+// 一番手前のカードの動画を再生するイベントリスナー
+document.getElementById('playCenterVideo').addEventListener('click', function() {
+    // カメラの中心に最も近いカードを特定する
+    let closestCardIndex = findClosestCardToCameraCenter();
+    // 最も近いカードに関連付けられたビデオエレメントを取得
+    const closestVideoElement = cards[closestCardIndex].userData.videoElement;
+
+    // ビデオの再生状態をチェックして、適切に制御
+    if (closestVideoElement.paused) {
+        closestVideoElement.play();
+    } else {
+        closestVideoElement.pause();
+    }
+});
 
 
 // ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
