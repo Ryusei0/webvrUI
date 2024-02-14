@@ -251,44 +251,18 @@ function render() {
 
 render();
 
-// レイキャスターとマウスベクトルの設定
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
 // タッチイベントリスナーを追加
-// タッチイベントリスナーを追加
-window.addEventListener('touchend', function(event) {
-    // デフォルトのタッチイベントの動作を防ぐ
-    event.preventDefault();
+document.getElementById('playCenterVideo').addEventListener('click', function() {
+    // 中央のカードに関連付けられたビデオエレメントを取得
+    const centerVideoElement = cards[currentIndex].userData.videoElement;
 
-    // タッチされた位置を取得
-    if (event.changedTouches.length > 0) {
-        var touch = event.changedTouches[0];
-        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+    // ビデオの再生状態をチェックして、適切に制御
+    if (centerVideoElement.paused) {
+        centerVideoElement.play();
+    } else {
+        centerVideoElement.pause();
     }
-
-    // タッチイベントに基づいてオブジェクトを検出
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(cards);
-
-    // タッチされたカードのビデオを再生または一時停止
-    if (intersects.length > 0) {
-        const intersectedCard = intersects[0].object;
-        const videoElement = intersectedCard.userData.videoElement;
-
-        // カードが現在中央にあるか確認し、ビデオの再生状態を切り替える
-        if (intersectedCard.userData.index === currentIndex) {
-            if (videoElement.paused) {
-                videoElement.play();
-            } else {
-                videoElement.pause();
-            }
-        }
-    }
-}, false);
-
-
+});
 
 // ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
 function updateSize() {
