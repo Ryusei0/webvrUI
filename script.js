@@ -289,19 +289,22 @@ function render() {
 
 render();
 
-// カメラの中心に最も近いカードを見つける関数
-function findClosestCardToCameraCenter() {
-    let closestIndex = 0;
-    let closestDistance = Infinity; // 最も近い距離を格納する変数を初期化
+function findClosestCardInFrontOfCamera() {
+    let closestIndex = -1;
+    let closestAngle = Math.PI; // 最も近い角度を格納する変数を初期化（180度で初期化）
 
-    // カメラの中心に最も近いカードを探索
+    // カメラの正面にあるカードを探索
     cards.forEach((card, index) => {
-        const pos = card.position.clone().project(camera);
-        const distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y); // 2D平面での距離を計算
+        // カメラの位置からカードの位置へのベクトルを計算
+        const directionToCard = new THREE.Vector3().subVectors(card.position, camera.position).normalize();
+        // カメラの視線ベクトルを取得
+        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
+        // ベクトル間の角度を計算（ドット積から）
+        const angle = Math.acos(cameraDirection.dot(directionToCard));
 
-        // これまでで最も近い距離よりも近ければ、そのインデックスと距離を更新
-        if (distance < closestDistance) {
-            closestDistance = distance;
+        // これまでで最も小さい角度よりも小さければ、そのインデックスと角度を更新
+        if (angle < closestAngle && angle < Math.PI / 2) { // 反対側ではなく、正面のカードだけを考慮
+            closestAngle = angle;
             closestIndex = index;
         }
     });
@@ -312,7 +315,7 @@ function findClosestCardToCameraCenter() {
 // 一番手前のカードの動画を再生するイベントリスナー
 document.getElementById('playCenterVideo').addEventListener('click', function() {
     // カメラの中心に最も近いカードを特定する
-    let closestCardIndex = findClosestCardToCameraCenter();
+    let closestCardIndex = findClosestCardInFrontOfCamera();
     // 最も近いカードに関連付けられたビデオエレメントを取得
     const closestVideoElement = cards[closestCardIndex].userData.videoElement;
 
