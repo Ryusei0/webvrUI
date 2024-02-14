@@ -171,9 +171,9 @@ function updateCardPositions(index) {
         card.position.set(x, 0, z);
         card.lookAt(camera.position);
 
-         // カードが中央にある場合は手前に表示
-    const zOffset = (i === index) ? -5 : 0; // 中央のカードを手前に
-    card.position.set(x, 0, z + zOffset);
+         // カードが中央にある場合は、スケールを大きくして強調表示
+        const scale = (i === index) ? 1.5 : 1; // 中央のカードを大きく表示
+        card.scale.set(scale, scale, scale);
 
         // userDataにカードの現在のインデックスを保存
         card.userData.index = i;
