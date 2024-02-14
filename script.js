@@ -97,7 +97,7 @@ const radius = 30;
 const videoTextures = [];
 const cardWidth = 16;
 const cardHeight = 9;
-const cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
+let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
 
