@@ -104,7 +104,7 @@ const videos = [
 
 const cards = [];
 let currentIndex = 0;
-const radius = 3;
+const radius = 8;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
