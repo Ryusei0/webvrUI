@@ -20,7 +20,7 @@ function resetViewport() {
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const y = 8;
+const y = 0;
 camera.position.set(0, y, 11);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -45,7 +45,7 @@ const planeGeometry = new THREE.PlaneGeometry(20, 20);
 const planeMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.rotation.x = -Math.PI / 2;
-plane.position.y = -3;
+plane.position.y = -6;
 plane.receiveShadow = true;
 scene.add(plane);
 
@@ -61,7 +61,7 @@ loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gl
     gltf.scene.scale.set(0.06, 0.06, 0.06);
     
     // モデルの位置を調整
-    gltf.scene.position.y = -2; // Y軸（上下位置）を調整。モデルを下に移動させる
+    gltf.scene.position.y = -4; // Y軸（上下位置）を調整。モデルを下に移動させる
     gltf.scene.position.z = 2; // Z軸（前後位置）を調整。必要に応じて前後に移動
 
     gltf.scene.traverse(function (node) {
