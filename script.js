@@ -110,11 +110,11 @@ const videos = [
 
 const cards = [];
 let currentIndex = 0;
-const radius = 8;
+const radius = 6;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
-const cardcamera = y/2;
+const cardcamera = y/1.5;
 let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 const textMeshes = [];
