@@ -145,7 +145,7 @@ function findClosestCardInFrontOfCamera() {
 // カードの位置とサイズを更新する関数
 function updateCardPositions(index) {
     // 中央のカードを特定するために、現在のカメラの中心に最も近いカードを見つける
-    let closestCardIndex = findClosestCardToCameraCenter();
+    let closestCardIndex = findClosestCardInFrontOfCamera();
     const cardOffset = 2 * Math.PI / videos.length; // カード間の角度
     cards.forEach((card, i) => {
         const angle = cardOffset * (i - index) + Math.PI / 2; // indexを中心に配置
@@ -338,9 +338,6 @@ function render() {
 }
 
 render();
-
-
-
 
 // ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
 function updateSize() {
