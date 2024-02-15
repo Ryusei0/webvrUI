@@ -119,6 +119,57 @@ const videos = [
     // 他の動画をここに追加
 ];
 
+function findClosestCardInFrontOfCamera() {
+    let closestIndex = -1;
+    let closestAngle = Math.PI; // 最も近い角度を格納する変数を初期化（180度で初期化）
+
+    // カメラの正面にあるカードを探索
+    cards.forEach((card, index) => {
+        // カメラの位置からカードの位置へのベクトルを計算
+        const directionToCard = new THREE.Vector3().subVectors(card.position, camera.position).normalize();
+        // カメラの視線ベクトルを取得
+        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
+        // ベクトル間の角度を計算（ドット積から）
+        const angle = Math.acos(cameraDirection.dot(directionToCard));
+
+        // これまでで最も小さい角度よりも小さければ、そのインデックスと角度を更新
+        if (angle < closestAngle && angle < Math.PI / 2) { // 反対側ではなく、正面のカードだけを考慮
+            closestAngle = angle;
+            closestIndex = index;
+        }
+    });
+
+    return closestIndex; // 最も近いカードのインデックスを返す
+}
+
+// カードの位置とサイズを更新する関数
+function updateCardPositions(index) {
+    // 中央のカードを特定するために、現在のカメラの中心に最も近いカードを見つける
+    let closestCardIndex = findClosestCardToCameraCenter();
+    const cardOffset = 2 * Math.PI / videos.length; // カード間の角度
+    cards.forEach((card, i) => {
+        const angle = cardOffset * (i - index) + Math.PI / 2; // indexを中心に配置
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+        card.position.set(x, 0, z);
+        card.lookAt(camera.position);
+
+         // カードが中央にある場合は、スケールを大きくして強調表示
+        const scale = (i === closestCardIndex) ? 1.5 : 1; // 中央のカードを大きく表示
+        card.scale.set(scale, scale, scale);
+
+        // userDataにカードの現在のインデックスを保存
+        card.userData.index = i;
+    });
+
+    // テキストメッシュの位置を更新（必要に応じて）
+    textMeshes.forEach((textMesh, i) => {
+        // 中央のカードに関連するテキストメッシュの位置やサイズを調整
+        const scale = (i === closestCardIndex) ? 1.5 : 1;
+        textMesh.scale.set(scale, scale, scale); // テキストのスケールも調整
+    });
+}
+
 // カメラの正面にある最も近いカードのインデックスを見つける
 const closestCardIndex = findClosestCardInFrontOfCamera();
 
@@ -235,33 +286,6 @@ function animate() {
 // 初期状態でカメラの回転を制限
 lockCameraRotation();
 
-// カードの位置とサイズを更新する関数
-function updateCardPositions(index) {
-    // 中央のカードを特定するために、現在のカメラの中心に最も近いカードを見つける
-    let closestCardIndex = findClosestCardToCameraCenter();
-    const cardOffset = 2 * Math.PI / videos.length; // カード間の角度
-    cards.forEach((card, i) => {
-        const angle = cardOffset * (i - index) + Math.PI / 2; // indexを中心に配置
-        const x = radius * Math.cos(angle);
-        const z = radius * Math.sin(angle);
-        card.position.set(x, 0, z);
-        card.lookAt(camera.position);
-
-         // カードが中央にある場合は、スケールを大きくして強調表示
-        const scale = (i === closestCardIndex) ? 1.5 : 1; // 中央のカードを大きく表示
-        card.scale.set(scale, scale, scale);
-
-        // userDataにカードの現在のインデックスを保存
-        card.userData.index = i;
-    });
-
-    // テキストメッシュの位置を更新（必要に応じて）
-    textMeshes.forEach((textMesh, i) => {
-        // 中央のカードに関連するテキストメッシュの位置やサイズを調整
-        const scale = (i === closestCardIndex) ? 1.5 : 1;
-        textMesh.scale.set(scale, scale, scale); // テキストのスケールも調整
-    });
-}
 
 // フォントのロード
 const fontLoader = new FontLoader();
@@ -314,29 +338,6 @@ function render() {
 }
 
 render();
-
-function findClosestCardInFrontOfCamera() {
-    let closestIndex = -1;
-    let closestAngle = Math.PI; // 最も近い角度を格納する変数を初期化（180度で初期化）
-
-    // カメラの正面にあるカードを探索
-    cards.forEach((card, index) => {
-        // カメラの位置からカードの位置へのベクトルを計算
-        const directionToCard = new THREE.Vector3().subVectors(card.position, camera.position).normalize();
-        // カメラの視線ベクトルを取得
-        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
-        // ベクトル間の角度を計算（ドット積から）
-        const angle = Math.acos(cameraDirection.dot(directionToCard));
-
-        // これまでで最も小さい角度よりも小さければ、そのインデックスと角度を更新
-        if (angle < closestAngle && angle < Math.PI / 2) { // 反対側ではなく、正面のカードだけを考慮
-            closestAngle = angle;
-            closestIndex = index;
-        }
-    });
-
-    return closestIndex; // 最も近いカードのインデックスを返す
-}
 
 
 
