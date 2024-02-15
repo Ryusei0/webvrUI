@@ -119,19 +119,6 @@ const videos = [
     // 他の動画をここに追加
 ];
 
-document.getElementById('playCenterVideo').addEventListener('click', function() {
-    // カメラの中央に最も近いカードを特定するロジック
-    let closestCardIndex = findClosestCardInFrontOfCamera();
-    // 中央のカードに関連付けられたビデオエレメントを取得
-    const centerVideoElement = cards[closestCardIndex].userData.videoElement;
-
-    // ビデオの再生状態をチェックして、適切に制御
-    if (centerVideoElement.paused) {
-        centerVideoElement.play();
-    } else {
-        centerVideoElement.pause();
-    }
-});
 
 function findClosestCardInFrontOfCamera() {
     let closestIndex = -1;
@@ -201,6 +188,31 @@ function updateCategoryLabel() {
     }
   }
 
+  // カードが選択されたとき、またはユーザーが何らかの入力をしたときに実行する
+function onCardSelected(index) {
+    // 選択されたカードに応じて更新
+    currentIndex = index; // もし必要であれば
+    updateCardPositions(currentIndex); // カードの位置を更新
+    updateCategoryLabel(); // カテゴリラベルを更新
+    playVideoForSelectedCard(currentIndex); // 選択されたカードのビデオを再生
+}
+
+// 選択されたカードのビデオを再生する関数
+function playVideoForSelectedCard(index) {
+    const selectedVideoElement = cards[index].userData.videoElement;
+    if (selectedVideoElement.paused) {
+        selectedVideoElement.play();
+    } else {
+        selectedVideoElement.pause();
+    }
+}
+
+// イベントハンドラー内での呼び出し
+document.getElementById('playCenterVideo').addEventListener('click', function() {
+    // カメラの中央に最も近いカードを特定し、ビデオを再生
+    const closestCardIndex = findClosestCardInFrontOfCamera();
+    onCardSelected(closestCardIndex); // 選択されたカードに応じて更新
+});
 
 // 各ビデオに対してカードを作成
 videos.forEach((video, index) => {
@@ -272,8 +284,9 @@ function animate() {
     ensureModelFacesCamera(); // モデルがカメラを向くように更新
     controls.update(); // 必要に応じてコントロールを更新
     renderer.render(scene, camera);
-    requestAnimationFrame(animate);
+    updateCardPositions(currentIndex); // カードの位置を更新
     updateCategoryLabel(); // カテゴリラベルを更新
+    requestAnimationFrame(animate);
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
     // ビデオテクスチャを更新
