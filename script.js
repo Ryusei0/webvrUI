@@ -121,7 +121,7 @@ const videos = [
 
 document.getElementById('playCenterVideo').addEventListener('click', function() {
     // カメラの中央に最も近いカードを特定するロジック
-    let closestCardIndex = findClosestCardToCameraCenter();
+    let closestCardIndex = findClosestCardInFrontOfCamera();
     // 中央のカードに関連付けられたビデオエレメントを取得
     const centerVideoElement = cards[closestCardIndex].userData.videoElement;
 
