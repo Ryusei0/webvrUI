@@ -182,7 +182,7 @@ function updateCategoryLabel() {
   
     if (closestCardIndex !== -1) {
       const closestCard = videos[closestCardIndex];
-      categoryLabel.textContent = `カテゴリー: ${closestCard.category}`;
+      categoryLabel.textContent = `${closestCard.category}`;
     } else {
       categoryLabel.textContent = 'カテゴリーが見つかりません';
     }
