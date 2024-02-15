@@ -258,8 +258,9 @@ document.getElementById('lockCameraButton').addEventListener('click', function()
 function animate() {
     ensureModelFacesCamera(); // モデルがカメラを向くように更新
     controls.update(); // 必要に応じてコントロールを更新
-    updateCategoryLabel(); // カテゴリラベルを更新
+    renderer.render(scene, camera);
     requestAnimationFrame(animate);
+    updateCategoryLabel(); // カテゴリラベルを更新
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
     // ビデオテクスチャを更新
