@@ -178,7 +178,7 @@ const closestCardIndex = findClosestCardInFrontOfCamera();
 // カテゴリラベルを更新する関数
 function updateCategoryLabel() {
     const closestCardIndex = findClosestCardInFrontOfCamera();
-    const categoryLabel = document.getElementById('categoryLabel');
+    const categoryLabel = document.getElementById('videoListContainer');
   
     if (closestCardIndex !== -1) {
       const closestCard = videos[closestCardIndex];
