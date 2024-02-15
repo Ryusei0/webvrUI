@@ -183,9 +183,8 @@ select {
 
 #lockCameraButton {
     position: fixed;
-    top: 40px;
+    top: 60px;
     right: 10px;
-    transform: translateX(-50%);
     z-index: 999; /* Ensure it's above other elements */
     /* Rest of your styling */
 }
