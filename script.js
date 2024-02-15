@@ -119,40 +119,31 @@ const videos = [
     // 他の動画をここに追加
 ];
 
-// 動画リストを動的に生成する関数
-function populateVideoList() {
-    const container = document.getElementById('videoListContainer');
-    container.innerHTML = ''; // コンテナを初期化
+// カメラの正面にある最も近いカードのインデックスを見つける
+const closestCardIndex = findClosestCardInFrontOfCamera();
 
-    // 各動画に対してHTML要素を作成
-    videos.forEach((video, index) => {
-        // カテゴリと動画名を含む要素を作成
-        const videoElement = document.createElement('div');
-        videoElement.innerHTML = `<strong>${video.category}</strong>: ${video.name}`;
-        videoElement.style.marginBottom = '10px'; // スタイルの設定
-
-        // 一番手前のカードの動画を再生するイベントリスナー
-document.getElementById('playCenterVideo').addEventListener('click', function() {
-    // カメラの中心に最も近いカードを特定する
-    let closestCardIndex = findClosestCardInFrontOfCamera();
-    // 最も近いカードに関連付けられたビデオエレメントを取得
-    const closestVideoElement = cards[closestCardIndex].userData.videoElement;
-
-    // ビデオの再生状態をチェックして、適切に制御
-    if (closestVideoElement.paused) {
-        closestVideoElement.play();
-    } else {
-        closestVideoElement.pause();
-    }
-});
-
-        // 要素をコンテナに追加
-        container.appendChild(videoElement);
-    });
+// カテゴリ名を表示するためのHTML要素を取得または作成
+let categoryLabel = document.getElementById('categoryLabel');
+if (!categoryLabel) {
+  categoryLabel = document.createElement('div');
+  categoryLabel.id = 'categoryLabel';
+  categoryLabel.style.position = 'absolute';
+  categoryLabel.style.top = '50%'; // 中央に配置
+  categoryLabel.style.left = '50%';
+  categoryLabel.style.transform = 'translate(-50%, -50%)'; // 中央に正確に配置するため
+  categoryLabel.style.zIndex = '100';
+  categoryLabel.style.color = 'black';
+  document.body.appendChild(categoryLabel);
 }
 
-// ページが読み込まれたら動画リストを表示
-document.addEventListener('DOMContentLoaded', populateVideoList);
+// 最も近いカードのカテゴリ名を表示
+if (closestCardIndex !== -1) {
+  const closestCard = videos[closestCardIndex];
+  categoryLabel.textContent = `カテゴリー: ${closestCard.category}`;
+} else {
+  categoryLabel.textContent = 'カテゴリーが見つかりません';
+}
+
 
 // 各ビデオに対してカードを作成
 videos.forEach((video, index) => {
