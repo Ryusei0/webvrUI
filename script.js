@@ -168,32 +168,25 @@ function updateCardPositions(index) {
         const scale = (i === closestCardIndex) ? 1.5 : 1;
         textMesh.scale.set(scale, scale, scale); // テキストのスケールも調整
     });
+
+    updateCategoryLabel(); // カテゴリラベルを更新
 }
 
 // カメラの正面にある最も近いカードのインデックスを見つける
 const closestCardIndex = findClosestCardInFrontOfCamera();
 
-// カテゴリ名を表示するためのHTML要素を取得または作成
-let categoryLabel = document.getElementById('categoryLabel');
-if (!categoryLabel) {
-  categoryLabel = document.createElement('div');
-  categoryLabel.id = 'categoryLabel';
-  categoryLabel.style.position = 'absolute';
-  categoryLabel.style.top = '50%'; // 中央に配置
-  categoryLabel.style.left = '50%';
-  categoryLabel.style.transform = 'translate(-50%, -50%)'; // 中央に正確に配置するため
-  categoryLabel.style.zIndex = '100';
-  categoryLabel.style.color = 'black';
-  document.body.appendChild(categoryLabel);
-}
-
-// 最も近いカードのカテゴリ名を表示
-if (closestCardIndex !== -1) {
-  const closestCard = videos[closestCardIndex];
-  categoryLabel.textContent = `カテゴリー: ${closestCard.category}`;
-} else {
-  categoryLabel.textContent = 'カテゴリーが見つかりません';
-}
+// カテゴリラベルを更新する関数
+function updateCategoryLabel() {
+    const closestCardIndex = findClosestCardInFrontOfCamera();
+    const categoryLabel = document.getElementById('categoryLabel');
+  
+    if (closestCardIndex !== -1) {
+      const closestCard = videos[closestCardIndex];
+      categoryLabel.textContent = `カテゴリー: ${closestCard.category}`;
+    } else {
+      categoryLabel.textContent = 'カテゴリーが見つかりません';
+    }
+  }
 
 
 // 各ビデオに対してカードを作成
@@ -265,7 +258,7 @@ document.getElementById('lockCameraButton').addEventListener('click', function()
 function animate() {
     ensureModelFacesCamera(); // モデルがカメラを向くように更新
     controls.update(); // 必要に応じてコントロールを更新
-    renderer.render(scene, camera);
+    updateCategoryLabel(); // カテゴリラベルを更新
     requestAnimationFrame(animate);
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
