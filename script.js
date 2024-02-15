@@ -49,6 +49,17 @@ plane.position.y = -7;
 plane.receiveShadow = true;
 scene.add(plane);
 
+const cards = [];
+let currentIndex = 0;
+const radius = 6;
+const videoTextures = [];
+const cardWidth = 3.2;
+const cardHeight = 1.8;
+const cardcamera = y/1.5;
+let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
+const videoElements = [];
+const textMeshes = [];
+
 const loader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
@@ -99,25 +110,49 @@ function onWindowResize() {
     updateCardPositions(currentIndex);
 }
 
-
+// 動画リストの準備
 const videos = [
-    { name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/1.mp4" },
-    { name: "ビデオ2", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/2.mp4" },
-    { name: "ビデオ0", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/0.mp4" },
-    { name: "ビデオ3", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/3.mp4" },
+    { category: "大学について", name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/1.mp4" },
+    { category: "大学について", name: "ビデオ2", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/2.mp4" },
+    { category: "学校生活", name: "ビデオ0", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/0.mp4" },
+    { category: "学校生活", name: "ビデオ3", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/3.mp4" },
     // 他の動画をここに追加
 ];
 
-const cards = [];
-let currentIndex = 0;
-const radius = 6;
-const videoTextures = [];
-const cardWidth = 3.2;
-const cardHeight = 1.8;
-const cardcamera = y/1.5;
-let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
-const videoElements = [];
-const textMeshes = [];
+// 動画リストを動的に生成する関数
+function populateVideoList() {
+    const container = document.getElementById('videoListContainer');
+    container.innerHTML = ''; // コンテナを初期化
+
+    // 各動画に対してHTML要素を作成
+    videos.forEach((video, index) => {
+        // カテゴリと動画名を含む要素を作成
+        const videoElement = document.createElement('div');
+        videoElement.innerHTML = `<strong>${video.category}</strong>: ${video.name}`;
+        videoElement.style.marginBottom = '10px'; // スタイルの設定
+
+        // 一番手前のカードの動画を再生するイベントリスナー
+document.getElementById('playCenterVideo').addEventListener('click', function() {
+    // カメラの中心に最も近いカードを特定する
+    let closestCardIndex = findClosestCardInFrontOfCamera();
+    // 最も近いカードに関連付けられたビデオエレメントを取得
+    const closestVideoElement = cards[closestCardIndex].userData.videoElement;
+
+    // ビデオの再生状態をチェックして、適切に制御
+    if (closestVideoElement.paused) {
+        closestVideoElement.play();
+    } else {
+        closestVideoElement.pause();
+    }
+});
+
+        // 要素をコンテナに追加
+        container.appendChild(videoElement);
+    });
+}
+
+// ページが読み込まれたら動画リストを表示
+document.addEventListener('DOMContentLoaded', populateVideoList);
 
 // 各ビデオに対してカードを作成
 videos.forEach((video, index) => {
@@ -312,20 +347,7 @@ function findClosestCardInFrontOfCamera() {
     return closestIndex; // 最も近いカードのインデックスを返す
 }
 
-// 一番手前のカードの動画を再生するイベントリスナー
-document.getElementById('playCenterVideo').addEventListener('click', function() {
-    // カメラの中心に最も近いカードを特定する
-    let closestCardIndex = findClosestCardInFrontOfCamera();
-    // 最も近いカードに関連付けられたビデオエレメントを取得
-    const closestVideoElement = cards[closestCardIndex].userData.videoElement;
 
-    // ビデオの再生状態をチェックして、適切に制御
-    if (closestVideoElement.paused) {
-        closestVideoElement.play();
-    } else {
-        closestVideoElement.pause();
-    }
-});
 
 
 // ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
