@@ -173,11 +173,19 @@ select {
 
   #playCenterVideo {
     position: fixed;
-    bottom: 80px; /* Adjust the bottom position so it's above the text box */
+    bottom: 85px; /* Adjust the bottom position so it's above the text box */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%);
     z-index: 999;
     /* Rest of your styling */
 }
-  
+
+#lockCameraButton {
+    position: fixed;
+    top: 10px; /* Close to the top of the viewport */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
+    z-index: 999; /* Ensure it's above other elements */
+    /* Rest of your styling */
+}
   

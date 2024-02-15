@@ -119,6 +119,20 @@ const videos = [
     // 他の動画をここに追加
 ];
 
+document.getElementById('playCenterVideo').addEventListener('click', function() {
+    // カメラの中央に最も近いカードを特定するロジック
+    let closestCardIndex = findClosestCardToCameraCenter();
+    // 中央のカードに関連付けられたビデオエレメントを取得
+    const centerVideoElement = cards[closestCardIndex].userData.videoElement;
+
+    // ビデオの再生状態をチェックして、適切に制御
+    if (centerVideoElement.paused) {
+        centerVideoElement.play();
+    } else {
+        centerVideoElement.pause();
+    }
+});
+
 function findClosestCardInFrontOfCamera() {
     let closestIndex = -1;
     let closestAngle = Math.PI; // 最も近い角度を格納する変数を初期化（180度で初期化）
