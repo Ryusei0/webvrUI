@@ -22,6 +22,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const y = 0;
 camera.position.set(0, y, 11);
+let currentAudio = null;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -137,6 +138,40 @@ function findClosestCardInFrontOfCamera() {
     return closestIndex; // 最も近いカードのインデックスを返す
 }
 
+// 中央のカードに関連付けられたメディア（動画または音声）を再生する関数
+function playCenterMedia() {
+    // 現在再生中の音声があれば停止
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+  
+    // カメラに最も近いカードを見つける
+    const closestCardIndex = findClosestCardInFrontOfCamera();
+    if (closestCardIndex !== -1) {
+      const card = cards[closestCardIndex];
+      const videoElement = card.userData.videoElement;
+      const audioUrl = videos[closestCardIndex].mp3; // 新しいリスト構造に基づく
+  
+      // 音声の再生
+      if (audioUrl) {
+        currentAudio = new Audio(audioUrl);
+        currentAudio.play();
+        currentAudio.onended = function() {
+          // 音声の再生が終了したら、次のカードへ移動して再生
+          currentIndex = (currentIndex + 1) % videos.length;
+          updateCardPositions(currentIndex);
+          playCenterMedia(); // 次のカードのメディアを再生
+        };
+      }
+  
+      // 動画の再生（URLが動画である場合）
+      if (videoElement && videoElement.nodeName === 'VIDEO') {
+        videoElement.play();
+      }
+    }
+  }
+
 // カードの位置とサイズを更新する関数
 function updateCardPositions(index) {
     // 中央のカードを特定するために、現在のカメラの中心に最も近いカードを見つける
@@ -150,7 +185,7 @@ function updateCardPositions(index) {
         card.lookAt(camera.position);
 
          // カードが中央にある場合は、スケールを大きくして強調表示
-        const scale = (i === closestCardIndex) ? 1.5 : 1; // 中央のカードを大きく表示
+        const scale = (i === closestCardIndex) ? 1.4 : 1; // 中央のカードを大きく表示
         card.scale.set(scale, scale, scale);
 
         // userDataにカードの現在のインデックスを保存
@@ -165,6 +200,7 @@ function updateCardPositions(index) {
     });
 
     updateCategoryLabel(); // カテゴリラベルを更新
+    playCenterMedia(); // 中央のカードに関連するメディアを再生
 }
 
 // カテゴリラベルを更新する関数
@@ -222,6 +258,9 @@ videos.forEach((video, index) => {
     scene.add(card);
     cards.push(card);
 });
+
+// 初期化時や適切なイベントでこの関数を呼び出して、最初のメディアを再生
+playCenterMedia();
 
 // カメラの制限を設定/解除するためのフラグ
 let isCameraLocked = true;
