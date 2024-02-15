@@ -167,9 +167,6 @@ function updateCardPositions(index) {
     updateCategoryLabel(); // カテゴリラベルを更新
 }
 
-// カメラの正面にある最も近いカードのインデックスを見つける
-const closestCardIndex = findClosestCardInFrontOfCamera();
-
 // カテゴリラベルを更新する関数
 function updateCategoryLabel() {
     const closestCardIndex = findClosestCardInFrontOfCamera();
@@ -183,30 +180,19 @@ function updateCategoryLabel() {
     }
   }
 
-  // カードが選択されたとき、またはユーザーが何らかの入力をしたときに実行する
-function onCardSelected(index) {
-    // 選択されたカードに応じて更新
-    currentIndex = index; // もし必要であれば
-    updateCardPositions(currentIndex); // カードの位置を更新
-    updateCategoryLabel(); // カテゴリラベルを更新
-    playVideoForSelectedCard(currentIndex); // 選択されたカードのビデオを再生
-}
-
-// 選択されたカードのビデオを再生する関数
-function playVideoForSelectedCard(index) {
-    const selectedVideoElement = cards[index].userData.videoElement;
-    if (selectedVideoElement.paused) {
-        selectedVideoElement.play();
-    } else {
-        selectedVideoElement.pause();
-    }
-}
-
 // イベントハンドラー内での呼び出し
 document.getElementById('playCenterVideo').addEventListener('click', function() {
-    // カメラの中央に最も近いカードを特定し、ビデオを再生
+    // カメラに最も近いカードを見つける
     const closestCardIndex = findClosestCardInFrontOfCamera();
-    onCardSelected(closestCardIndex); // 選択されたカードに応じて更新
+    if (closestCardIndex !== -1) {
+        // 最も近いカードに関連付けられたビデオエレメントを取得し、再生状態を切り替える
+        const videoElement = cards[closestCardIndex].userData.videoElement;
+        if (videoElement.paused) {
+            videoElement.play();
+        } else {
+            videoElement.pause();
+        }
+    }
 });
 
 // 各ビデオに対してカードを作成
