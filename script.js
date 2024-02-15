@@ -122,20 +122,15 @@ const videos = [
 
 function findClosestCardInFrontOfCamera() {
     let closestIndex = -1;
-    let closestAngle = Infinity;
-    // カメラの正面にあるカードを探索
-    cards.forEach((card, index) => {
-        // カメラの位置からカードの位置へのベクトルを計算
-        const directionToCard = new THREE.Vector3().subVectors(card.position, camera.position).normalize();
-        // カメラの視線ベクトルを取得
-        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
-        // ベクトル間の角度を計算（ドット積から）
-        const angle = Math.acos(cameraDirection.dot(directionToCard));
+    let closestDistance = Infinity; // 最も近い距離を初期化
 
-        // これまでで最も小さい角度よりも小さければ、そのインデックスと角度を更新
-        if (angle < closestAngle && angle < Math.PI / 2) { // 反対側ではなく、正面のカードだけを考慮
-            closestAngle = angle;
-            closestIndex = index;
+    // カメラから各カードへの距離を計算し、最も近いものを見つける
+    cards.forEach((card, index) => {
+        const distance = camera.position.distanceTo(card.position); // カメラからカードへの距離
+
+        if (distance < closestDistance) {
+            closestDistance = distance; // 最も近い距離を更新
+            closestIndex = index; // 最も近いカードのインデックスを更新
         }
     });
 
