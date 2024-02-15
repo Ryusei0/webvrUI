@@ -135,15 +135,19 @@ document.getElementById('playCenterVideo').addEventListener('click', function() 
 
 function findClosestCardInFrontOfCamera() {
     let closestIndex = -1;
-    let closestDistance = Infinity; // 最も近い距離を格納する変数を初期化
-
+    let closestAngle = Infinity;
     // カメラの正面にあるカードを探索
     cards.forEach((card, index) => {
         // カメラの位置からカードの位置へのベクトルを計算
-        const directionToCard = new THREE.Vector3().subVectors(card.position, camera.position);
-        // Z成分をチェックし、最もカメラに近い（Z成分が最も小さい）カードを選択
-        if (directionToCard.z < closestDistance) {
-            closestDistance = directionToCard.z;
+        const directionToCard = new THREE.Vector3().subVectors(card.position, camera.position).normalize();
+        // カメラの視線ベクトルを取得
+        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
+        // ベクトル間の角度を計算（ドット積から）
+        const angle = Math.acos(cameraDirection.dot(directionToCard));
+
+        // これまでで最も小さい角度よりも小さければ、そのインデックスと角度を更新
+        if (angle < closestAngle && angle < Math.PI / 2) { // 反対側ではなく、正面のカードだけを考慮
+            closestAngle = angle;
             closestIndex = index;
         }
     });
