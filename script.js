@@ -200,14 +200,17 @@ function playCenterMedia(index) {
     // カードの位置を取得
     const cardPosition = cardPositions[currentIndex];
     if (cardPosition) {
-        // カードとカメラの間の初期距離を維持しつつカメラの位置を設定
-        const initialCameraZOffset = 11; // カメラとカードの初期Z軸上の距離
-        camera.position.x = cardPosition.x;
-        camera.position.y = 0; // 必要に応じてY座標を調整
-        camera.position.z = cardPosition.z + initialCameraZOffset; // Z座標をカードの前に設定
+        // カードの中心からカメラまでのオフセット（半径 + 追加のオフセット）
+        const cameraOffset = 6; // 半径が6なので、半径に等しい値を初期値として使用
+        const additionalOffset = 5; // カードとカメラの間の追加の距離
 
-        // カメラがカードの中心を見るようにする
-        camera.lookAt(new THREE.Vector3(cardPosition.x, 0, cardPosition.z));
+        // カメラの位置を円周上のカードに合わせて更新し、追加のオフセットを考慮
+        camera.position.x = cardPosition.x * (cameraOffset + additionalOffset) / cameraOffset;
+        camera.position.y = 0; // Y座標は変更なし
+        camera.position.z = cardPosition.z * (cameraOffset + additionalOffset) / cameraOffset;
+
+        // カメラがシーンの原点（カードの中心点を向くようにする）
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
 
     const mediaInfo = activeList[currentIndex]; // 現在のメディア情報を取得
@@ -322,8 +325,6 @@ function regenerateCards(videos) {
 
         scene.add(card); // シーンにカードを追加
         cards.push(card); // カード配列にカードを追加
-        // カードの座標を保存
-        cardPositions.push({x: x, y: 0, z: z});
     });
 
     currentIndex = 0; // 最初のカードを中心に設定
@@ -337,13 +338,10 @@ function updateCardPositions() {
     // カード間の角度を計算
     const cardOffset = 2 * Math.PI / cards.length;
 
-    // 中心に来るカードの角度を設定
-    let firstCardAngle = cardOffset * currentIndex;
-
     // 各カードの位置を計算して更新
     cards.forEach((card, index) => {
         // カードの配置角度を計算
-        const angle = firstCardAngle + cardOffset * index;
+        const angle = cardOffset * index;
         const x = radius * Math.sin(angle); // 円周上のX座標
         const z = radius * Math.cos(angle); // 円周上のZ座標
 
@@ -351,12 +349,17 @@ function updateCardPositions() {
         card.position.set(x, 0, z);
         card.lookAt(new THREE.Vector3(0, 0, 0)); // カードが原点（カメラの位置）を向くようにする
 
-        // 最初のカードをカメラの前に配置
-        if (index === currentIndex) {
-            card.position.set(0, 0, radius);
-        }
+        // カードの座標を保存
+        cardPositions[index] = { x: x, y: 0, z: z };
     });
+
+    // 中心に来るカードの位置を設定する
+    const centerCardPosition = cardPositions[currentIndex];
+    if (centerCardPosition) {
+        cards[currentIndex].position.set(0, 0, radius);
+    }
 }
+
 
 // カメラに最も近いカードのtitle属性を基にalternateVideosを更新する関数
 function updateAlternateVideosBasedOnClosestCard() {

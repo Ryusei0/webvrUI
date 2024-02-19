@@ -9,6 +9,12 @@ html, body{
     max-width: 100vw;
     overflow-x: hidden;
 }
+
+video {
+    width: 100vw; /* ビューポートの幅に合わせて動画を拡大します */
+    height: 100vh; /* ビューポートの高さに合わせて動画を拡大します */
+    object-fit: cover; /* プレイヤー領域を動画で完全に覆います */
+  }
   
 /* 入力コンテナのスタイル */
 #inputContainer {
