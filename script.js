@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -63,7 +62,8 @@ const radius = 6;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
-const cardcamera = y/1.5;
+// カードの座標を保存する配列
+let cardPositions = [];
 let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
 const videoElements = [];
 
@@ -191,7 +191,24 @@ function playCenterMedia(index) {
     const playButton = document.getElementById('playCenterVideo');
     const activeList = isOriginalList ? videos : alternateVideos; // 現在のアクティブリストを取得
 
-    currentIndex = index !== undefined ? index : findClosestCardInFrontOfCamera(); // 引数が与えられた場合はそれを使用
+    if (index !== undefined) {
+        currentIndex = index;
+    } else {
+        currentIndex = findClosestCardInFrontOfCamera();
+    }
+
+    // カードの位置を取得
+    const cardPosition = cardPositions[currentIndex];
+    if (cardPosition) {
+        // カードとカメラの間の初期距離を維持しつつカメラの位置を設定
+        const initialCameraZOffset = 11; // カメラとカードの初期Z軸上の距離
+        camera.position.x = cardPosition.x;
+        camera.position.y = 0; // 必要に応じてY座標を調整
+        camera.position.z = cardPosition.z + initialCameraZOffset; // Z座標をカードの前に設定
+
+        // カメラがカードの中心を見るようにする
+        camera.lookAt(new THREE.Vector3(cardPosition.x, 0, cardPosition.z));
+    }
 
     const mediaInfo = activeList[currentIndex]; // 現在のメディア情報を取得
     const card = cards[currentIndex]; // 現在のカードを取得
@@ -276,14 +293,15 @@ function updateCategoryLabel() {
 //ビデオプレーンの切り替え
 
 function regenerateCards(videos) {
-    // 既存のカードをシーンから削除
+    // 既存のカードとその座標をクリア
     cards.forEach(card => {
         scene.remove(card);
         if (card.material.map) card.material.map.dispose();
         card.material.dispose();
         card.geometry.dispose();
     });
-    cards.length = 0; // カード配列をリセット
+    cards.length = 0;
+    cardPositions.length = 0; // 座標配列もリセット
     videoTextures.forEach(texture => texture.dispose());
     videoTextures.length = 0; // ビデオテクスチャ配列をクリア
 
@@ -304,6 +322,8 @@ function regenerateCards(videos) {
 
         scene.add(card); // シーンにカードを追加
         cards.push(card); // カード配列にカードを追加
+        // カードの座標を保存
+        cardPositions.push({x: x, y: 0, z: z});
     });
 
     currentIndex = 0; // 最初のカードを中心に設定
@@ -619,13 +639,14 @@ function populateModalContent() {
     // 文字の追加
     const textContent = document.createElement('p');
     textContent.textContent = 'ここにモーダルのテキストが表示されます。';
+    textContent.style.color = ' white';
     modalBody.appendChild(textContent);
 
     // 画像の追加
     const image = document.createElement('img');
     image.src = 'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/_20%E9%80%A3%E7%99%BA_%E5%AD%A6%E6%A0%A1%E7%94%9F%E6%B4%BB%E3%81%A6%E3%82%99%E7%88%AA%E7%97%95%E6%AE%8B%E3%81%99%E5%8B%87%E8%80%85%E3%81%9F%E3%81%A1%E3%81%8B%E3%82%99%E3%83%A4%E3%83%8F%E3%82%99%E3%81%99%E3%81%8D%E3%82%99%E3%82%8Bwwwwwwwwww_TikTok_.jpg';
     image.alt = '画像の説明';
-    image.style.width = '50%'; // 画像のサイズ調整
-    image.style.left = '25%';
+    image.style.width = '100%'; // 画像のサイズ調整
+    image.style.top = '5px';
     modalBody.appendChild(image);
 }
