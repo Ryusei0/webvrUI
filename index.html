@@ -26,11 +26,12 @@
 
     <div id="responseContainer">応答がここに表示されます。</div>
     <button id="toggleResponse">返答を表示</button>
-    <button id="playCenterVideo">中央のビデオを再生</button>
+    <button id="playCenterVideo">再生</button>
     <button id="lockCameraButton">切り替え</button>
     <div id="videoListContainer">
         <!-- 動画リストがここに挿入されます -->
-      </div>
+    </div>
+    <button id="changeListButton">プレーン切り替え</button>
       
     <!-- ハンバーガーメニューアイコン -->
 <div class="hamburger-menu">
@@ -45,7 +46,21 @@
       <!-- JavaScriptで情報の一覧を動的に追加 -->
     </ul>
   </div>
-  
+ <!-- モーダル表示用のボタン -->
+<button id="showModalButton">モーダルを表示</button>
+
+<!-- モーダルのコンテナ -->
+<div id="myModal" class="modal">
+  <!-- モーダルの内容 -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="modalBody">
+      <!-- 文字や画像を動的に追加するためのコンテナ -->
+    </div>
+  </div>
+</div>
+
+
     <script src="script.js" type="module"></script>
     
 </body>
