@@ -29,7 +29,7 @@ let currentIndex = 0; // 現在のカードのインデックスを追跡
 let cards = []; // Use let if you plan to reassign cards
 // 現在のリストが元のリストかどうかを追跡
 let isOriginalList = true;
-
+let currentDisplayedURL = ''; // 現在表示されているURLを追跡
 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -76,7 +76,7 @@ let mixer;
 
 loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/223S.gltf', function (gltf) {
     scene.add(gltf.scene);
-    gltf.scene.scale.set(0.11, 0.11, 0.11);
+    gltf.scene.scale.set(0.114, 0.114, 0.114);
     
     // モデルの位置を調整
     gltf.scene.position.y = -6; // Y軸（上下位置）を調整。モデルを下に移動させる
@@ -217,6 +217,9 @@ function playCenterMedia(index) {
     const card = cards[currentIndex]; // 現在のカードを取得
     currentVideoElement = card.userData.videoElement; // ビデオ要素を取得
 
+    // displayMedia関数を使用してメディアを表示。動画または画像ファイルの場合
+    displayMedia(mediaInfo.url);
+
     // 再生中のメディアをクリア
     if (currentVideoElement) {
         currentVideoElement.pause();
@@ -226,14 +229,24 @@ function playCenterMedia(index) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
-
-    // displayMedia関数を使用してメディアを表示。動画または画像ファイルの場合
-    if (mediaInfo.url.endsWith('.mp4') || ['jpg', 'jpeg', 'png', 'gif'].some(ext => mediaInfo.url.endsWith(ext))) {
-        displayMedia(mediaInfo.url); // ここは変更なし
-        isPlaying = true;
-        playButton.textContent = '停止';
+    // 動画の再生ロジックをここに追加
+    if (mediaInfo.url.endsWith('.mp4')) {
+        const videoPlayer = document.getElementById('videoPlayer');
+        
+        // 動画を再読み込みしてから再生する
+        videoPlayer.load(); // 新しいソースを読み込む
+        videoPlayer.oncanplaythrough = () => { // 動画が再生可能になるのを待つ
+            videoPlayer.play() // 動画の再生を開始
+            .then(() => {
+                isPlaying = true;
+                playButton.textContent = '停止';
+            })
+            .catch(error => {
+                console.error('Playback failed:', error);
+                // エラー処理をここで行う
+            });
+        };
     }
-
     if (mediaInfo.mp3) {
         currentAudio = new Audio(mediaInfo.mp3);
         currentAudio.play();
@@ -259,13 +272,13 @@ function displayMedia(url) {
     // URLの拡張子を取得
     const extension = url.split('.').pop().toLowerCase();
 
+    // 動画または画像ファイルの場合の処理を分ける
     if (extension === 'mp4' || extension === 'webm') {
         // 動画ファイルの場合
         videoPlayer.src = url;
         videoPlayer.style.display = 'block';
         imageDisplay.style.display = 'none';
-        videoPlayer.play();
-    } else if (extension === 'jpg' || extension === 'png' || extension === 'gif') {
+    } else if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
         // 画像ファイルの場合
         imageDisplay.src = url;
         imageDisplay.style.display = 'block';
@@ -275,6 +288,7 @@ function displayMedia(url) {
     // コンテンツコンテナを表示
     contentContainer.style.display = 'block';
 }
+
 
 
 // ユーザー操作によるメディアの停止
@@ -492,7 +506,19 @@ function animate() {
     renderer.render(scene, camera);
     updateCategoryLabel(); // カテゴリラベルを更新
     requestAnimationFrame(animate);
-    findClosestCardInFrontOfCamera()
+    findClosestCardInFrontOfCamera();
+    // 最も近いカードのインデックスを取得
+    const closestCardIndex = findClosestCardInFrontOfCamera();
+    const activeList = isOriginalList ? videos : alternateVideos;
+
+    if (closestCardIndex !== -1 && activeList[closestCardIndex]) {
+        const closestCardURL = activeList[closestCardIndex].url; // 最も近いカードのURLを取得
+        // URLが以前と異なる場合のみメディアを更新
+        if (currentDisplayedURL !== closestCardURL) {
+            displayMedia(closestCardURL);
+            currentDisplayedURL = closestCardURL; // 現在表示されているURLを更新
+        }
+    }
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
     // カードがカメラを向くように更新
