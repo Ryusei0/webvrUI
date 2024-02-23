@@ -31,7 +31,14 @@
     <div id="videoListContainer">
         <!-- 動画リストがここに挿入されます -->
     </div>
-    <button id="changeListButton">プレーン切り替え</button>
+    <button id="changeListButton">詳しく見る</button>
+
+    <div id="contentContainer" class="content-container">
+      <video id="videoPlayer">
+          お使いのブラウザはビデオタグをサポートしていません。
+      </video>
+      <img id="imageDisplay">
+  </div>
       
     <!-- ハンバーガーメニューアイコン -->
 <div class="hamburger-menu">
@@ -41,13 +48,11 @@
   </div>
   
   <!-- メニューの内容 -->
-  <div class="menu-content" id="menuContent">
-    <ul id="infoList">
-      <!-- JavaScriptで情報の一覧を動的に追加 -->
-    </ul>
+  <div class="menu-content" id="menuallContent">
+    <div class="menu-content" id="menuContent"></div>
   </div>
  <!-- モーダル表示用のボタン -->
-<button id="showModalButton">モーダルを表示</button>
+<button id="showModalButton">詳細を表示</button>
 
 <!-- モーダルのコンテナ -->
 <div id="myModal" class="modal">

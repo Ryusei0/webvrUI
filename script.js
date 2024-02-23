@@ -20,7 +20,7 @@ function resetViewport() {
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const y = 0;
-camera.position.set(0, y, 11);
+camera.position.set(0, y, 12.5);
 // グローバル変数の宣言部分
 let currentAudio = null;
 let currentVideoElement = null; // 動画要素を追跡するために追加
@@ -45,8 +45,8 @@ controls.update();
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-directionalLight.position.set(0, 7, 1);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+directionalLight.position.set(0.4, 2, 8);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
@@ -58,7 +58,7 @@ plane.position.y = -7;
 plane.receiveShadow = true;
 scene.add(plane);
 
-const radius = 6;
+const radius = 8;
 const videoTextures = [];
 const cardWidth = 3.2;
 const cardHeight = 1.8;
@@ -74,12 +74,12 @@ loader.setDRACOLoader(dracoLoader);
 
 let mixer;
 
-loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/light.gltf', function (gltf) {
+loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/223S.gltf', function (gltf) {
     scene.add(gltf.scene);
-    gltf.scene.scale.set(0.07, 0.07, 0.07);
+    gltf.scene.scale.set(0.11, 0.11, 0.11);
     
     // モデルの位置を調整
-    gltf.scene.position.y = -5; // Y軸（上下位置）を調整。モデルを下に移動させる
+    gltf.scene.position.y = -6; // Y軸（上下位置）を調整。モデルを下に移動させる
     gltf.scene.position.z = 1; // Z軸（前後位置）を調整。必要に応じて前後に移動
 
     gltf.scene.traverse(function (node) {
@@ -118,10 +118,10 @@ function onWindowResize() {
 
 // 動画リストの準備
 const videos = [
-    { category: "大学について",title:"list1", name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/1.mp4" },
-    { category: "大学について", title:"list1",name: "ビデオ2", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/2.mp4" },
-    { category: "学校生活", title:"list2",name: "ビデオ0", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/0.mp4" },
-    { category: "学校生活", title:"list2",name: "ビデオ3", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/3.mp4" },
+    { category: "当サイトについて",title:"list1", name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg" },
+    { category: "私たちの目指す未来", title:"list2",name: "ビデオ2", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E7%A7%81%E3%81%9F%E3%81%A1%E3%81%AE%E6%9C%AA%E6%9D%A5.jpg" },
+    { category: "FirstAIについて", title:"list2",name: "ビデオ0", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/FirstAI.jpg" },
+    { category: "事業詳細", title:"list2",name: "ビデオ3", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg" },
     // 他の動画をここに追加
 ];
 
@@ -197,12 +197,14 @@ function playCenterMedia(index) {
         currentIndex = findClosestCardInFrontOfCamera();
     }
 
+    const mediaInfo = activeList[currentIndex]; // 現在のメディア情報を取得
+
     // カードの位置を取得
     const cardPosition = cardPositions[currentIndex];
     if (cardPosition) {
         // カードの中心からカメラまでのオフセット（半径 + 追加のオフセット）
-        const cameraOffset = 6; // 半径が6なので、半径に等しい値を初期値として使用
-        const additionalOffset = 5; // カードとカメラの間の追加の距離
+        const cameraOffset = 8; // 半径が6なので、半径に等しい値を初期値として使用
+        const additionalOffset = 4.5; // カードとカメラの間の追加の距離
 
         // カメラの位置を円周上のカードに合わせて更新し、追加のオフセットを考慮
         camera.position.x = cardPosition.x * (cameraOffset + additionalOffset) / cameraOffset;
@@ -212,8 +214,6 @@ function playCenterMedia(index) {
         // カメラがシーンの原点（カードの中心点を向くようにする）
         camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
-
-    const mediaInfo = activeList[currentIndex]; // 現在のメディア情報を取得
     const card = cards[currentIndex]; // 現在のカードを取得
     currentVideoElement = card.userData.videoElement; // ビデオ要素を取得
 
@@ -227,12 +227,11 @@ function playCenterMedia(index) {
         currentAudio.currentTime = 0;
     }
 
-    if (currentVideoElement && mediaInfo.url.endsWith('.mp4')) {
-        currentVideoElement.play();
-        isPlaying = true; // 再生状態を更新
-        if (playButton.textContent !== '停止') {
-            playButton.textContent = '停止'; // ユーザーが操作した場合のみラベルを更新
-        }
+    // displayMedia関数を使用してメディアを表示。動画または画像ファイルの場合
+    if (mediaInfo.url.endsWith('.mp4') || ['jpg', 'jpeg', 'png', 'gif'].some(ext => mediaInfo.url.endsWith(ext))) {
+        displayMedia(mediaInfo.url); // ここは変更なし
+        isPlaying = true;
+        playButton.textContent = '停止';
     }
 
     if (mediaInfo.mp3) {
@@ -252,26 +251,59 @@ function playCenterMedia(index) {
     }
 }
 
+function displayMedia(url) {
+    const videoPlayer = document.getElementById('videoPlayer');
+    const imageDisplay = document.getElementById('imageDisplay');
+    const contentContainer = document.getElementById('contentContainer');
+
+    // URLの拡張子を取得
+    const extension = url.split('.').pop().toLowerCase();
+
+    if (extension === 'mp4' || extension === 'webm') {
+        // 動画ファイルの場合
+        videoPlayer.src = url;
+        videoPlayer.style.display = 'block';
+        imageDisplay.style.display = 'none';
+        videoPlayer.play();
+    } else if (extension === 'jpg' || extension === 'png' || extension === 'gif') {
+        // 画像ファイルの場合
+        imageDisplay.src = url;
+        imageDisplay.style.display = 'block';
+        videoPlayer.style.display = 'none';
+    }
+
+    // コンテンツコンテナを表示
+    contentContainer.style.display = 'block';
+}
+
+
 // ユーザー操作によるメディアの停止
-function stopMedia(userAction = false) {
-    if (currentVideoElement) {
-        currentVideoElement.pause();
-        currentVideoElement.currentTime = 0;
-    }
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
-    isPlaying = false; // 再生状態を更新
-    if (userAction) { // ユーザーが明示的に操作した場合のみラベルを変更
-        document.getElementById('playCenterVideo').textContent = '再生';
-    }
+function stopMedia(){
+    const playButton = document.getElementById('playCenterVideo'); // playButtonをローカルで取得
+    const videoPlayer = document.getElementById('videoPlayer');
+    const imageDisplay = document.getElementById('imageDisplay');
+    const contentContainer = document.getElementById('contentContainer');
+        // メディアを停止
+        if (currentVideoElement) {
+            currentVideoElement.pause();
+            currentVideoElement.currentTime = 0;
+        }
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+        // コンテナを非表示にする
+        videoPlayer.style.display = 'none';
+        imageDisplay.style.display = 'none';
+        contentContainer.style.display = 'none';
+        isPlaying = false; // 再生状態を更新
+        playButton.textContent = '再生'; 
 }
 
 // イベントリスナーの設定
 document.getElementById('playCenterVideo').addEventListener('click', () => {
     if (isPlaying) {
-        stopMedia(true); // ユーザーが停止を要求
+        stopMedia(); // ユーザーが停止を要求
     } else {
         let index = findClosestCardInFrontOfCamera();
         playCenterMedia(index); // ユーザーが再生を要求
@@ -295,7 +327,7 @@ function updateCategoryLabel() {
 
 //ビデオプレーンの切り替え
 
-function regenerateCards(videos) {
+function regenerateCards(items) {
     // 既存のカードとその座標をクリア
     cards.forEach(card => {
         scene.remove(card);
@@ -305,31 +337,45 @@ function regenerateCards(videos) {
     });
     cards.length = 0;
     cardPositions.length = 0; // 座標配列もリセット
-    videoTextures.forEach(texture => texture.dispose());
-    videoTextures.length = 0; // ビデオテクスチャ配列をクリア
+    videoTextures.forEach(texture => texture.dispose()); // すべてのテクスチャをクリア
+    videoTextures.length = 0;
 
-    videos.forEach((video, index) => {
+    items.forEach((item, index) => {
+        let texture;
+        const isVideo = item.url.endsWith('.mp4');
+
+        if (isVideo) {
+            // 動画要素の作成
         const videoElement = document.createElement('video');
-        videoElement.src = video.url;
+        videoElement.src = item.url;
         videoElement.crossOrigin = "anonymous";
         videoElement.preload = 'auto';
-        videoElement.load();
+        // 動画の自動再生やループを無効化
+        videoElement.muted = true; // ミュートは必要ですが、自動再生はしません
+        videoElement.loop = false; // ループを無効化
 
-        const videoTexture = new THREE.VideoTexture(videoElement);
-        videoTextures.push(videoTexture);
+        // テクスチャを動画から作成
+        texture = new THREE.VideoTexture(videoElement);
+        } else {
+            // 画像の場合、THREE.TextureLoaderを使用してテクスチャをロード
+            texture = new THREE.TextureLoader().load(item.url);
+        }
 
-        const cardMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
+        videoTextures.push(texture);
+
+        const cardMaterial = new THREE.MeshBasicMaterial({ map: texture });
         const card = new THREE.Mesh(cardGeometry, cardMaterial);
-    
-        card.userData = { videoElement: videoElement, index: index }; // ユーザーデータにビデオ要素とインデックスを保存
+        card.userData = { index: index, type: isVideo ? 'video' : 'image', title: item.title };
 
-        scene.add(card); // シーンにカードを追加
+        // シーンにカードを追加
+        scene.add(card);
         cards.push(card); // カード配列にカードを追加
     });
 
     currentIndex = 0; // 最初のカードを中心に設定
     updateCardPositions(); // カードの位置を更新
 }
+
 
 // カードの位置を更新する関数
 function updateCardPositions() {
@@ -380,7 +426,6 @@ function updateAlternateVideosBasedOnClosestCard() {
     }
 }
 
-// リスト切り替えボタンのイベントハンドラ
 document.getElementById('changeListButton').addEventListener('click', () => {
     // リストの状態を切り替える
     isOriginalList = !isOriginalList;
@@ -389,6 +434,17 @@ document.getElementById('changeListButton').addEventListener('click', () => {
     // 新しいリストでカードを再生成
     const newVideos = isOriginalList ? videos : alternateVideos;
     regenerateCards(newVideos);
+
+    // ボタンのテキストと表示状態を切り替える
+    if (isOriginalList) {
+        document.getElementById('playCenterVideo').style.display = 'none'; // 「再生」ボタンを非表示にする
+        document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
+        document.getElementById('changeListButton').textContent = '詳細';
+    } else {
+        document.getElementById('playCenterVideo').style.display = 'block'; // 「再生」ボタンを表示する
+        document.getElementById('changeListButton').textContent = '戻る'; // ボタンのテキストを「戻る」に変更
+        document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
+    }
 });
 
 // カメラの制限を設定/解除するためのフラグ
@@ -439,12 +495,6 @@ function animate() {
     findClosestCardInFrontOfCamera()
     const delta = clock.getDelta();
     if (mixer) mixer.update(delta);
-    // ビデオテクスチャを更新
-    videoTextures.forEach((texture) => {
-        if (texture.image.readyState === HTMLVideoElement.HAVE_ENOUGH_DATA) {
-            texture.needsUpdate = true;
-        }
-    });
     // カードがカメラを向くように更新
     cards.forEach((card) => {
         card.lookAt(camera.position);
@@ -557,7 +607,7 @@ function sendInput() {
     // 送信直後にテキストボックスをクリア
     document.getElementById('userInput').value = '';
 
-    fetch('https://webchat-yghl.onrender.com/submit-query', {
+    fetch('https://unity-test-air1.onrender.com/process_query', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -568,6 +618,12 @@ function sendInput() {
     .then(data => {
         console.log('Success:', data);
         responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
+
+        // 音声URLが応答に含まれている場合、音声を再生する
+        if (data.audioUrl) {
+            var audio = new Audio(data.audioUrl);
+            audio.play().catch(error => console.error('Audio play failed:', error));
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -582,6 +638,7 @@ function sendInput() {
     });
 }
 
+
 function toggleResponse() {
     var responseContainer = document.getElementById('responseContainer');
     var toggleButton = document.getElementById('toggleResponse');
@@ -594,45 +651,116 @@ function toggleResponse() {
     }
  }
 
-// ハンバーガーメニューをクリックしたときのイベント
-document.querySelector('.hamburger-menu').addEventListener('click', function() {
-    document.getElementById('menuContent').style.display = document.getElementById('menuContent').style.display === 'block' ? 'none' : 'block';
-  });
-  
-  // 情報の一覧を配列で
-  const infoArray = ["情報1", "情報2", "情報3", "情報4"];
-  
-  // 情報の一覧をリストに追加する関数
-  function populateInfoList() {
-    const list = document.getElementById('infoList');
-    infoArray.forEach(item => {
-      const listItem = document.createElement('li');
-      listItem.textContent = item;
-      list.appendChild(listItem);
+ var selectedVideoIndex = -1; // 選択されたビデオのインデックスを初期化
+
+ // メニュー内に現在アクティブなリストの全てのtitleをボタンとして表示する関数
+ function updateMenuTitles() {
+    const activeList = isOriginalList ? videos : alternateVideos;
+    const menu = document.getElementById('menuContent');
+    menu.innerHTML = '';
+
+    activeList.forEach((video, index) => {
+        const button = document.createElement('button');
+        button.textContent = video.category;
+        button.className = 'video-button';
+        button.setAttribute('data-index', index);
+        button.addEventListener('click', function() {
+            selectedVideoIndex = this.getAttribute('data-index');
+            console.log("Selected video index: ", selectedVideoIndex);
+
+            if (isOriginalList) {
+                // リストの状態がtrueの場合、既存の処理を実行
+                // リストの状態を切り替える
+                isOriginalList = !isOriginalList;
+
+                updateAlternateVideosBasedOnList();
+                // 新しいリストでカードを再生成
+                const newVideos = isOriginalList ? videos : alternateVideos;
+                regenerateCards(newVideos);
+                // ボタンのテキストと表示状態を切り替える
+    if (isOriginalList) {
+        document.getElementById('playCenterVideo').style.display = 'none'; // 「再生」ボタンを非表示にする
+        document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
+        document.getElementById('changeListButton').textContent = '詳細';
+    } else {
+        document.getElementById('playCenterVideo').style.display = 'block'; // 「再生」ボタンを表示する
+        document.getElementById('changeListButton').textContent = '戻る'; // ボタンのテキストを「戻る」に変更
+        document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
+    }
+            } else {
+                playCenterMedia(selectedVideoIndex); 
+                console.log("Alternate process for non-original list");
+            }
+
+            toggleMenu(); // メニューを閉じる
+        });
+        menu.appendChild(button);
     });
-  }
-  
-  // ドキュメントが読み込まれた後に情報リストを追加
-  document.addEventListener('DOMContentLoaded', populateInfoList);
+}
+
+// メニューの表示/非表示を切り替える関数
+function toggleMenu() {
+    const menuallContent = document.getElementById('menuallContent');
+    const menuContent = document.getElementById('menuContent');
+    if (menuallContent.style.display === 'block') {
+        menuallContent.style.display = 'none';
+        menuContent.style.display = 'none';
+    } else {
+        menuallContent.style.display = 'block';
+        menuContent.style.display = 'block';
+    }
+}
+
+// ハンバーガーメニューをクリックしたときのイベントリスナー
+document.querySelector('.hamburger-menu').addEventListener('click', function() {
+    updateMenuTitles();
+    toggleMenu(); // メニューの表示/非表示を切り替える
+});
 
   // ページの読み込みが完了したらinit関数を呼び出し
 window.addEventListener('load', init);
 
-// モーダルの表示・非表示の制御
+// モーダルの表示・非表示の制御にボタンの表示状態を追加
 document.getElementById('showModalButton').addEventListener('click', function() {
     document.getElementById('myModal').style.display = 'block';
+    // モーダルを表示するボタンを非表示にする
+    this.style.display = 'none';
     populateModalContent();
 });
 
 document.querySelector('.close').addEventListener('click', function() {
     document.getElementById('myModal').style.display = 'none';
+    // モーダルを表示するボタンを再表示する
+    document.getElementById('showModalButton').style.display = 'block';
 });
 
 window.addEventListener('click', function(event) {
     if (event.target == document.getElementById('myModal')) {
         document.getElementById('myModal').style.display = 'none';
+        // モーダルを表示するボタンを再表示する
+        document.getElementById('showModalButton').style.display = 'block';
     }
 });
+
+
+// カメラに最も近いカードのtitle属性を基にalternateVideosを更新する関数
+function updateAlternateVideosBasedOnList() {
+    
+    const closestCardIndex = selectedVideoIndex;
+    
+    // カメラに最も近いカードのtitle属性（リストID）を取得
+    const closestCardTitle = videos[closestCardIndex].title;
+    
+    alternateVideos = [];
+
+    // targetIdに一致するリストを探す
+    const targetList = allLists.find(list => list.id === closestCardTitle);
+
+    // 該当するリストが見つかった場合、そのvideosをalternateVideosに設定
+    if (closestCardTitle) {
+        alternateVideos = targetList.videos;
+    }
+}
 
 // モーダルに文字と画像を追加する関数
 function populateModalContent() {
@@ -647,9 +775,8 @@ function populateModalContent() {
 
     // 画像の追加
     const image = document.createElement('img');
-    image.src = 'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/_20%E9%80%A3%E7%99%BA_%E5%AD%A6%E6%A0%A1%E7%94%9F%E6%B4%BB%E3%81%A6%E3%82%99%E7%88%AA%E7%97%95%E6%AE%8B%E3%81%99%E5%8B%87%E8%80%85%E3%81%9F%E3%81%A1%E3%81%8B%E3%82%99%E3%83%A4%E3%83%8F%E3%82%99%E3%81%99%E3%81%8D%E3%82%99%E3%82%8Bwwwwwwwwww_TikTok_.jpg';
+    image.src = 'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg';
     image.alt = '画像の説明';
-    image.style.width = '100%'; // 画像のサイズ調整
-    image.style.top = '5px';
+    image.classList.add('modal-image'); // CSSクラスを適用
     modalBody.appendChild(image);
 }

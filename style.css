@@ -106,6 +106,9 @@ select {
 
 @media (max-width: 768px) {
 
+    #contentContainer {
+        max-width: 100%; /* スマホではコンテナの最大幅をデバイスの幅に合わせる */
+    }
     /* スマホ表示のためのスタイル調整 */
     #inputContainer, #responseContainer {
         max-width: calc(100% - 20px);
@@ -116,6 +119,9 @@ select {
         padding: 8px 16px;
     }
 
+    .modal-image {
+        width: 100%; /* パソコンでの表示サイズを50%に調整 */
+    }
 }
 
 /* ハンバーガーメニューのスタイリング */
@@ -156,12 +162,11 @@ select {
     padding: 12px 16px;
     z-index: 1000; 
   }  
-  
-  /* リストアイテム */
-  #infoList li {
-    padding: 8px 0;
-    color: white;
+
+  #menuContent{
+    padding: 10%;
   }
+  
 /* 動画カテゴリー */
   #videoListContainer {
         position: absolute;
@@ -180,6 +185,7 @@ select {
   }
 
   #playCenterVideo {
+    display: none;
     position: fixed;
     bottom: 85px; /* Adjust the bottom position so it's above the text box */
     left: 50%; /* Center horizontally */
@@ -242,11 +248,12 @@ select {
 }
 
 #showModalButton {
+    display: none;
     position: fixed; /* ボタンを画面に固定 */
     bottom: 85px;
     left: 30%;
     transform: translateX(-50%); /* ボタンの幅の半分だけ左に移動して、完全に中央に配置 */
-    z-index: 1001; /* 他の要素より前面に表示 */
+    z-index: 999; /* 他の要素より前面に表示 */
     padding: 10px 20px; /* パディング */
     border: none; /* 枠線なし */
     background-color: #007bff; /* 背景色 */
@@ -255,4 +262,32 @@ select {
     cursor: pointer; /* カーソル */
     min-width: 44px; /* 最小幅 */
     min-height: 44px; /* 最小高さ */
+}
+/* モーダル内の画像スタイル */
+.modal-image {
+    width: 50%; 
+    top: 5px;
+}
+
+#content-container {
+    position: relative;
+    z-index: 999;
+    width: 100%; /* コンテナの幅をデバイスの幅に合わせる */
+    max-width: 600px; /* 最大幅を600pxに設定 */
+    margin: auto; /* 中央揃え */
+    padding-bottom: 56.25%; /* 16:9のアスペクト比 */
+    overflow: hidden;
+    display: none; /* 初期状態では非表示 */
+  }  
+
+  
+video {
+    width: 100%; /* ビデオの幅をコンテナの幅に合わせる */
+    padding-bottom: 56.25%; /* 16:9のアスペクト比 */
+    height: auto; /* 高さを自動調整 */
+}
+
+#videoPlayer,
+#imageDisplay{
+    display: none;
 }
