@@ -140,7 +140,7 @@ select {
   /* 動画カテゴリー */
   #videoListContainer {
     position: absolute;
-    top: 40%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1000; /* Make sure this is higher than other elements if necessary */

@@ -433,6 +433,7 @@ document.getElementById('changeListButton').addEventListener('click', () => {
         document.getElementById('playCenterVideo').style.display = 'none'; // 「再生」ボタンを非表示にする
         document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
         document.getElementById('changeListButton').textContent = '詳細';
+        stopMedia(); // ユーザーが停止を要求
     } else {
         document.getElementById('playCenterVideo').style.display = 'block'; // 「再生」ボタンを表示する
         document.getElementById('changeListButton').textContent = '戻る'; // ボタンのテキストを「戻る」に変更
@@ -712,3 +713,33 @@ function populateModalContent() {
     image.classList.add('modal-image'); // CSSクラスを適用
     modalBody.appendChild(image);
 }
+
+//document.getElementById('fullscreenButton').addEventListener('click', function() {
+    //const videoPlayer = document.getElementById('videoPlayer');
+    
+   // if (!document.fullscreenElement &&    // 標準
+       // !document.mozFullScreenElement && // Firefox
+       // !document.webkitFullscreenElement && // Chrome, Safari and Opera
+        //!document.msFullscreenElement) { // IE/Edge
+        // 全画面表示がアクティブでない場合、開始する
+     //   if (videoPlayer.requestFullscreen) {
+  //          videoPlayer.requestFullscreen();
+    //    } else if (videoPlayer.mozRequestFullScreen) {
+     //       videoPlayer.mozRequestFullScreen();
+    //        videoPlayer.webkitRequestFullscreen();
+     //   } else if (videoPlayer.msRequestFullscreen) {
+   //         videoPlayer.msRequestFullscreen();
+   //     }
+ //   } else {
+        // 全画面表示がアクティブな場合、終了する
+ //       if (document.exitFullscreen) {
+ //           document.exitFullscreen();
+ //       } else if (document.mozCancelFullScreen) {
+ //           document.mozCancelFullScreen();
+ //       } else if (document.webkitExitFullscreen) {
+ //           document.webkitExitFullscreen();
+ //       } else if (document.msExitFullscreen) {
+//            document.msExitFullscreen();
+ //       }
+//    }
+//});
