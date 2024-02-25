@@ -94,39 +94,6 @@ select {
     font-size: 16px; /* iOSでのフォーカス時のズームを防ぐ */
 }
 
-/* 横向き時の調整 */
-@media (orientation: landscape) {
-}
-
-@media (max-width: 768px) {
-
-    #videoPlayer,
-    #contentContainer,
-    #imageDisplay {
-        width: 100vw; /* ビューポートの幅全体を使用します */
-        height: auto; /* 高さを自動調整します */
-        max-height: 56.25vw; /* アスペクト比16:9を保持するためのビューポート幅に基づいた最大高さ */
-        position: fixed; /* 要素を固定位置にします */
-        top: 50%; /* 要素の上端をビューポートの中心に合わせる */
-        left: 0; /* 要素の左端をビューポートの左端に合わせる */
-        right: 0; /* 要素の右端をビューポートの右端に合わせる */
-        transform: translateY(-50%); /* 要素を垂直方向に中央に配置 */
-    }
-    /* スマホ表示のためのスタイル調整 */
-    #inputContainer, #responseContainer {
-        max-width: calc(100% - 20px);
-        padding: 8px;
-    }
-
-    #userInput, button {
-        padding: 8px 16px;
-    }
-
-    .modal-image {
-        width: 100%; /* パソコンでの表示サイズを50%に調整 */
-    }
-}
-
 /* ハンバーガーメニューのスタイリング */
 .hamburger-menu {
     cursor: pointer;
@@ -287,4 +254,35 @@ select {
 #videoPlayer,
 #imageDisplay{
     display: none;
+}
+
+
+@media (max-width: 768px) {
+
+    #videoPlayer,
+    #contentContainer,
+    #imageDisplay {
+        width: 80vw; /* ビューポートの幅全体を使用します */
+        max-width:80vw;
+        height: auto; /* 高さを自動調整します */
+        max-height: 56.25vw; /* アスペクト比16:9を保持するためのビューポート幅に基づいた最大高さ */
+        object-fit: contain; /* コンテンツをコンテナ内に収める */
+        position: absolute; /* 要素を固定位置から相対位置に変更 */
+        top: 50%; /* 要素の上端をビューポートの中心に合わせる */
+        left: 50%; /* 要素の左端をビューポートの中心に合わせる */
+        transform: translate(-50%, -50%); /* 要素を中央に配置 */
+    }
+    /* スマホ表示のためのスタイル調整 */
+    #inputContainer, #responseContainer {
+        max-width: calc(100% - 20px);
+        padding: 8px;
+    }
+
+    #userInput, button {
+        padding: 8px 16px;
+    }
+
+    .modal-image {
+        width: 100%; /* パソコンでの表示サイズを50%に調整 */
+    }
 }

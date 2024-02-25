@@ -97,25 +97,6 @@ loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/223S.glt
 
 const clock = new THREE.Clock();
 
-window.addEventListener('resize', onWindowResize, false);
-
-function onWindowResize() {
-    console.log('ウィンドウがリサイズされました'); // デバッグログ
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const aspectRatio = width / height;
-
-    // カメラのアスペクト比を更新
-    camera.aspect = aspectRatio;
-    camera.updateProjectionMatrix();
-
-    // レンダラーのサイズを更新
-    renderer.setSize(width, height);
-
-    // カードの位置を更新
-    updateCardPositions(currentIndex);
-}
-
 // 動画リストの準備
 const videos = [
     { category: "当サイトについて",title:"list1", name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg" },
@@ -538,53 +519,10 @@ function render() {
 
 render();
 
-// ウィンドウのサイズに応じてアスペクト比を更新し、カメラとレンダラーのサイズを調整する関数
-function updateSize() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const aspectRatio = width / height;
-
-    // カメラのアスペクト比を更新
-    camera.aspect = aspectRatio;
-    camera.updateProjectionMatrix();
-
-    // レンダラーのサイズを更新
-    renderer.setSize(width, height);
-}
-
-// ウィンドウリサイズイベントのハンドラー
-window.addEventListener('resize', () => {
-    updateSize();
-    updateCardPositions(currentIndex); // カードの位置も更新
-});
-
-// 初期サイズの設定
-updateSize();
-
 // カードのサイズをウィンドウサイズに応じて調整する関数
 function resizeCards() {
-    const maxCardWidth = window.innerWidth * 0.9; // 画面の横幅の90%
-    const maxCardHeight = window.innerHeight * 0.9; // 画面の縦幅の90%
-    const cardAspectRatio = 16 / 9;
-    let cardWidth = cardAspectRatio * maxCardHeight;
-    let cardHeight = maxCardHeight;
-
-    if (cardWidth > maxCardWidth) {
-        // カードの幅が最大幅を超える場合、幅を基準にサイズを調整する
-        cardWidth = maxCardWidth;
-        cardHeight = cardWidth / cardAspectRatio;
-    }
-
-    // カードのジオメトリを更新
-    cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
-
-    // すべてのカードのメッシュを更新
-    cards.forEach((card, index) => {
-        card.geometry.dispose(); // 古いジオメトリを削除
-        card.geometry = cardGeometry; // 新しいジオメトリを設定
-    });
-
-    updateCardPositions(currentIndex); // カードの位置を更新
+    const newVideos = isOriginalList ? videos : alternateVideos;
+    regenerateCards(newVideos);
 }
 
 // ウィンドウのリサイズイベントでカードのリサイズ関数を呼び出す
