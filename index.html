@@ -2,12 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>GLTF Model with Three.js</title>
+    <title>株式会社First AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
     <script type="importmap">
         {
             "imports": {
@@ -19,6 +15,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="contentContainer" class="content-container">
+    <video id="videoPlayer">
+        お使いのブラウザはビデオタグをサポートしていません。
+    </video>
+    <img id="imageDisplay">
+</div>
     <div id="inputContainer">
         <input type="text" id="userInput" placeholder="テキストを入力...">
         <button id="sendButton">送信</button>
@@ -32,13 +34,6 @@
         <!-- 動画リストがここに挿入されます -->
     </div>
     <button id="changeListButton">詳しく見る</button>
-
-    <div id="contentContainer" class="content-container">
-      <video id="videoPlayer">
-          お使いのブラウザはビデオタグをサポートしていません。
-      </video>
-      <img id="imageDisplay">
-  </div>
       
     <!-- ハンバーガーメニューアイコン -->
 <div class="hamburger-menu">

@@ -100,17 +100,17 @@ select {
 
 @media (max-width: 768px) {
 
-    video,
+    #videoPlayer,
     #contentContainer,
-    img {
-      width: 80vw; /* ビューポートの幅の80%に合わせてサイズを拡大します */
-      max-width: 80vw; /* 最大幅もビューポートの幅の80%に設定します */
-      max-height: none; /* max-heightの制限を解除します */
-      position: relative; /* スクロールに従うように位置をrelativeに変更します */
-      top: auto; /* topとleftの値をautoに設定して通常のドキュメントフローに戻します */
-      left: auto;
-      transform: none; /* 中央揃えのためのtransformを解除します */
-      margin: 0 auto; /* 左右のマージンを自動に設定して中央揃えします */
+    #imageDisplay {
+        width: 100vw; /* ビューポートの幅全体を使用します */
+        height: auto; /* 高さを自動調整します */
+        max-height: 56.25vw; /* アスペクト比16:9を保持するためのビューポート幅に基づいた最大高さ */
+        position: fixed; /* 要素を固定位置にします */
+        top: 50%; /* 要素の上端をビューポートの中心に合わせる */
+        left: 0; /* 要素の左端をビューポートの左端に合わせる */
+        right: 0; /* 要素の右端をビューポートの右端に合わせる */
+        transform: translateY(-50%); /* 要素を垂直方向に中央に配置 */
     }
     /* スマホ表示のためのスタイル調整 */
     #inputContainer, #responseContainer {
@@ -167,25 +167,25 @@ select {
   }  
 
   #menuContent{
-    padding: 10%;
+    padding: 20% 20%;
   }
-  
-/* 動画カテゴリー */
+
+  /* 動画カテゴリー */
   #videoListContainer {
-        position: absolute;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000; /* Make sure this is higher than other elements if necessary */
-        color: black; /* Or any color you wish */
-        text-align: center; /* Center the text within the div */
-        /* Additional styles to ensure visibility/readability */
-        background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 16px; /* Or the size you prefer */
-        font-family: 'Arial', sans-serif; /* Or the font you prefer */
-  }
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000; /* Make sure this is higher than other elements if necessary */
+    color: black; /* Or any color you wish */
+    text-align: center; /* Center the text within the div */
+    /* Additional styles to ensure visibility/readability */
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px; /* Or the size you prefer */
+    font-family: 'Arial', sans-serif; /* Or the font you prefer */
+}
 
   #playCenterVideo {
     display: none;
@@ -272,37 +272,16 @@ select {
     top: 5px;
 }
 
-video {
-    width: 60vw; /* ビューポートの幅の70%に合わせて動画を拡大します */
-    height: auto; /* 高さを自動調整 */
-    object-fit: contain; /* ビデオをコンテナ内に収める */
-    max-height: 60vh; /* ビデオの高さがビューポートの70%を超えないように制限 */
-    position: absolute; /* ビデオをページから独立させる */
-    top: 50%; /* ビデオの上端をビューポートの中心に */
-    left: 50%; /* ビデオの左端をビューポートの中心に */
-    transform: translate(-50%, -50%); /* ビデオをちょうど中央に配置 */
-}
-
-#contentContainer {
-    width: 60%; /* コンテナの幅をビューポートの70%に設定 */
-    height: auto; /* 高さを自動調整 */
-    max-height: 60vh; /* コンテナの高さがビューポートの70%を超えないように制限 */
-    position: absolute; /* コンテナをページから独立させる */
-    top: 50%; /* コンテナの上端をビューポートの中心に */
-    left: 50%; /* コンテナの左端をビューポートの中心に */
-    transform: translate(-50%, -50%); /* コンテナをちょうど中央に配置 */
-   
-}
-
-img {
-    display: block; /* デフォルトのマージンを排除し、新しい配置に対応 */
-    max-width: 60%; /* 最大幅を画面の70%に設定 */
-    max-height: 60vh; /* 最大高さをビューポートの70%に設定 */
-    position: absolute; /* 他の要素との相対的な位置を独立させる */
-    top: 50%; /* 上端をビューポートの中央に設定 */
-    left: 50%; /* 左端をビューポートの中央に設定 */
-    transform: translate(-50%, -50%); /* 画像の中心がビューポートの中央に来るように移動 */
-}
+#videoPlayer, #contentContainer, #imageDisplay {
+        width: 45vw; /* ビューポートの幅に合わせてサイズを設定 */
+        max-width: 45vw; /* 最大幅をビューポートの幅に合わせて設定 */
+        height: auto; /* 高さを自動調整 */
+        object-fit: contain; /* コンテンツをコンテナ内に収める */
+        position: absolute; /* 要素をページから独立させる */
+        top: 50%; /* 要素の上端をビューポートの中心に合わせる */
+        left: 50%; /* 要素の左端をビューポートの中心に合わせる */
+        transform: translate(-50%, -50%); /* 要素を中央に配置 */
+    }
 
 
 #videoPlayer,

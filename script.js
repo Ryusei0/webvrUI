@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -81,6 +80,7 @@ loader.load('https://s3.ap-northeast-3.amazonaws.com/testunity1.0/webar/223S.glt
     // モデルの位置を調整
     gltf.scene.position.y = -6; // Y軸（上下位置）を調整。モデルを下に移動させる
     gltf.scene.position.z = 1; // Z軸（前後位置）を調整。必要に応じて前後に移動
+    gltf.scene.position.x = -0.3;
 
     gltf.scene.traverse(function (node) {
         if (node.isMesh) { node.castShadow = true; }
@@ -232,21 +232,19 @@ function playCenterMedia(index) {
     // 動画の再生ロジックをここに追加
     if (mediaInfo.url.endsWith('.mp4')) {
         const videoPlayer = document.getElementById('videoPlayer');
-        
-        // 動画を再読み込みしてから再生する
-        videoPlayer.load(); // 新しいソースを読み込む
-        videoPlayer.oncanplaythrough = () => { // 動画が再生可能になるのを待つ
-            videoPlayer.play() // 動画の再生を開始
-            .then(() => {
-                isPlaying = true;
-                playButton.textContent = '停止';
-            })
-            .catch(error => {
-                console.error('Playback failed:', error);
-                // エラー処理をここで行う
-            });
+        videoPlayer.src = mediaInfo.url; // メディアソースを設定
+        videoPlayer.load(); // メディアをロード
+    
+        videoPlayer.oncanplay = function() {
+            if (isPlaying) { // isPlayingフラグがtrueの時のみ再生
+                videoPlayer.play().then(() => {
+                    playButton.textContent = '停止';
+                }).catch(error => {
+                    console.error('Playback failed:', error);
+                });
+            }
         };
-    }
+    }    
     if (mediaInfo.mp3) {
         currentAudio = new Audio(mediaInfo.mp3);
         currentAudio.play();
@@ -531,36 +529,6 @@ function animate() {
 
 // 初期状態でカメラの回転を制限
 lockCameraRotation();
-
-
-// フォントのロード
-const fontLoader = new FontLoader();
-fontLoader.load(function () { // 日本語対応フォントのパス
-    videos.forEach((video, index) => {
-        const videoElement = document.createElement('video');
-        videoElement.src = video.url;
-        videoElement.crossOrigin = 'anonymous';
-        videoElement.preload = 'auto';
-        videoElement.load();
-        videoElements.push(videoElement);
-
-        const videoTexture = new THREE.VideoTexture(videoElement);
-        videoTextures.push(videoTexture);
-
-        const cardMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
-        const card = new THREE.Mesh(cardGeometry, cardMaterial);
-        const theta = (index / videos.length) * Math.PI * 2;
-        const x = radius * Math.cos(theta);
-        const z = radius * Math.sin(theta);
-        card.position.set(x, 0, z);
-        card.lookAt(camera.position);
-        card.userData = { videoElement: videoElement };
-        scene.add(card);
-        cards.push(card);
-    });
-
-    updateCardPositions(0); // 初期位置の更新
-});
 
 // レンダリングループ
 function render() {
