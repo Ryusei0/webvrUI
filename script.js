@@ -64,7 +64,6 @@ const cardHeight = 1.8;
 // カードの座標を保存する配列
 let cardPositions = [];
 let cardGeometry = new THREE.PlaneGeometry(cardWidth, cardHeight);
-const videoElements = [];
 
 const loader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
@@ -99,10 +98,10 @@ const clock = new THREE.Clock();
 
 // 動画リストの準備
 const videos = [
-    { category: "当サイトについて",title:"list1", name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg" },
-    { category: "私たちの目指す未来", title:"list2",name: "ビデオ2", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E7%A7%81%E3%81%9F%E3%81%A1%E3%81%AE%E6%9C%AA%E6%9D%A5.jpg" },
-    { category: "FirstAIについて", title:"list2",name: "ビデオ0", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/FirstAI.jpg" },
-    { category: "事業詳細", title:"list2",name: "ビデオ3", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg" },
+    { category: "当サイトについて",title:"list1", name: "ビデオ1",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg" },
+    { category: "私たちの目指す未来", title:"list2",name: "ビデオ2",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E7%A7%81%E3%81%9F%E3%81%A1%E3%81%AE%E6%9C%AA%E6%9D%A5.jpg" , url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E7%A7%81%E3%81%9F%E3%81%A1%E3%81%AE%E6%9C%AA%E6%9D%A5.jpg" },
+    { category: "FirstAIについて", title:"list2",name: "ビデオ0",samnail:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/FirstAI.jpg", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/FirstAI.jpg" },
+    { category: "事業詳細", title:"list2",name: "ビデオ3",samnail:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg" , url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg" },
     // 他の動画をここに追加
 ];
 
@@ -113,31 +112,34 @@ const allLists = [
         id: "list1",
         videos: [
             {planeid:1,category
-                :"当サイトについて",url
+                :"当サイトについて",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
                 :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/Artificial+intelligence+to+Enhance+Language+Skills+Presentation+in+Blue+and+Purple+3D+Modern+Style+(2).mp4",text:"当サイトは、次世代の会話型ウェブサイトです。従来のサイトと違い、あなたが情報を探したり、欲しかった情報が見つけられずに、再検索したりする必要はありません。圧倒的に詳しく、そして分かりやすく、あなたの欲しい情報を届けます。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%88_20240215_085026_858dab12be6142398953cfd2297c9480.mp3",time:17},
                 {planeid:1,category
-                :"こんな経験ありますか",url
+                :"こんな経験ありますか",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
                 :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/Artificial+intelligence+to+Enhance+Language+Skills+Presentation+in+Blue+and+Purple+3D+Modern+Style+(1).mp4",text:"私たちの強みは、圧倒的に賢いことです。情報量の制限はなく、あなたと1対1のコミュニケーションを実現します。何か知りたいことがあれば、下のテキストボックスから質問してくださいね。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E5%B0%8E%E5%85%A5%EF%BC%92_20240216_032001_465ed5af894146c09e7c40d5b9f48f81.mp3",time:12},
          {planeid:1,category
-                :"webサイトの限界",url
+                :"webサイトの限界",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
                 :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/Artificial+intelligence+to+Enhance+Language+Skills+Presentation+in+Blue+and+Purple+3D+Modern+Style+(2).mp4",text:"当サイトは、次世代の会話型ウェブサイトです。従来のサイトと違い、あなたが情報を探したり、欲しかった情報が見つけられずに、再検索したりする必要はありません。圧倒的に詳しく、そして分かりやすく、あなたの欲しい情報を届けます。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E3%83%98%E3%82%9A%E3%82%A4%E3%83%B3_20240216_032031_b3ab9655d6464c5d84b285e16366779d.mp3",time:17},
                 {planeid:1,category
-                :"こんな経験なくしましょう",url
+                :"こんな経験なくしましょう",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
                 :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/Artificial+intelligence+to+Enhance+Language+Skills+Presentation+in+Blue+and+Purple+3D+Modern+Style+(1).mp4",text:"私たちの強みは、圧倒的に賢いことです。情報量の制限はなく、あなたと1対1のコミュニケーションを実現します。何か知りたいことがあれば、下のテキストボックスから質問してくださいね。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E8%A7%A3%E6%B1%BA%E3%81%B8_20240216_032100_0901556cc47146f2b45982d016f93958.mp3",time:12},
         {planeid:1,category
-                :"私たちの強み",url
+                :"私たちの強み",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
                 :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/Artificial+intelligence+to+Enhance+Language+Skills+Presentation+in+Blue+and+Purple+3D+Modern+Style+(1).mp4",text:"私たちの強みは、圧倒的に賢いことです。情報量の制限はなく、あなたと1対1のコミュニケーションを実現します。何か知りたいことがあれば、下のテキストボックスから質問してくださいね。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E7%89%B9%E5%BE%B4_20240216_032128_fbadab376de74be0bf32af0c4915ef87.mp3",time:12},
         ]
     },
     {
         id: "list2",
         videos: [
-    { id:"1",category:"大学について",name: "ビデオ1", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/1.mp4" },
-    {  id:"1",category:"大学について",name: "ビデオ2", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/2.mp4" },
-    {  id:"1",category:"学校生活",name: "ビデオ0", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/0.mp4" },
-    {  id:"1",category:"学校生活",name: "ビデオ3", url: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/3.mp4" },
-    // 他の動画をここに追加
-]
+            {planeid:1,category:"大学について",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
+                :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/1.mp4",text:"当サイトは、次世代の会話型ウェブサイトです。従来のサイトと違い、あなたが情報を探したり、欲しかった情報が見つけられずに、再検索したりする必要はありません。圧倒的に詳しく、そして分かりやすく、あなたの欲しい情報を届けます。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E3%82%B9%E3%82%BF%E3%83%BC%E3%83%88_20240215_085026_858dab12be6142398953cfd2297c9480.mp3",time:17},
+                {planeid:1,category:"大学について",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
+                :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/2.mp4",text:"私たちの強みは、圧倒的に賢いことです。情報量の制限はなく、あなたと1対1のコミュニケーションを実現します。何か知りたいことがあれば、下のテキストボックスから質問してくださいね。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E5%B0%8E%E5%85%A5%EF%BC%92_20240216_032001_465ed5af894146c09e7c40d5b9f48f81.mp3",time:12},
+         {planeid:1,category:"学校生活",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
+                :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/0.mp4",text:"当サイトは、次世代の会話型ウェブサイトです。従来のサイトと違い、あなたが情報を探したり、欲しかった情報が見つけられずに、再検索したりする必要はありません。圧倒的に詳しく、そして分かりやすく、あなたの欲しい情報を届けます。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E3%83%98%E3%82%9A%E3%82%A4%E3%83%B3_20240216_032031_b3ab9655d6464c5d84b285e16366779d.mp3",time:17},
+                {planeid:1,category:"学校生活",samnail: "https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E6%AC%A1%E4%B8%96%E4%BB%A3%E3%82%B5%E3%82%A4%E3%83%88.jpg",url
+                :"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/videos/3.mp4",text:"私たちの強みは、圧倒的に賢いことです。情報量の制限はなく、あなたと1対1のコミュニケーションを実現します。何か知りたいことがあれば、下のテキストボックスから質問してくださいね。",mp3:"https://s3.ap-northeast-3.amazonaws.com/testunity1.0/audios/%E8%A7%A3%E6%B1%BA%E3%81%B8_20240216_032100_0901556cc47146f2b45982d016f93958.mp3",time:12},
+        ]
     },
     // 他のリストをここに追加...
 ];
@@ -297,6 +299,13 @@ function stopMedia(){
 document.getElementById('playCenterVideo').addEventListener('click', () => {
     if (isPlaying) {
         stopMedia(); // ユーザーが停止を要求
+        // 最も近いカードのインデックスを取得
+    const closestCardIndex = findClosestCardInFrontOfCamera();
+    const activeList = isOriginalList ? videos : alternateVideos;
+        const closestCardURL = activeList[closestCardIndex].samnail; // 最も近いカードのURLを取得
+        // URLが以前と異なる場合のみメディアを更新
+            displayMedia(closestCardURL);
+            currentDisplayedURL = closestCardURL; // 現在表示されているURLを更新
     } else {
         let index = findClosestCardInFrontOfCamera();
         playCenterMedia(index); // ユーザーが再生を要求
@@ -492,7 +501,7 @@ function animate() {
     const activeList = isOriginalList ? videos : alternateVideos;
 
     if (closestCardIndex !== -1 && activeList[closestCardIndex]) {
-        const closestCardURL = activeList[closestCardIndex].url; // 最も近いカードのURLを取得
+        const closestCardURL = activeList[closestCardIndex].samnail; // 最も近いカードのURLを取得
         // URLが以前と異なる場合のみメディアを更新
         if (currentDisplayedURL !== closestCardURL) {
             displayMedia(closestCardURL);
@@ -557,6 +566,20 @@ function sendInput() {
             var audio = new Audio(data.audioUrl);
             audio.play().catch(error => console.error('Audio play failed:', error));
         }
+
+        // サーバーからの応答に基づいてさらなる処理を行う
+        if (data.global_contentss) {
+            // global_contentss の値を解析する（例: "id: list1,category: 当サイトについて"）
+            const contents = data.global_contentss.split(',').reduce((acc, current) => {
+                const [key, value] = current.split(':');
+                acc[key.trim()] = value.trim();
+                return acc;
+            }, {});
+
+            console.log('Parsed contents:', contents);
+            // 修正後のanswerposition関数を呼び出す
+            answerposition(contents['id'], contents['category']);
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -571,6 +594,12 @@ function sendInput() {
     });
 }
 
+// 修正されたanswerposition関数（仮の実装）
+function answerposition(id, category) {
+    // idとcategoryに基づいて処理を行う
+    console.log(`Received id: ${id}, category: ${category}`);
+    // ここでidとcategoryを使用して必要な処理を実装
+}
 
 function toggleResponse() {
     var responseContainer = document.getElementById('responseContainer');
