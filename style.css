@@ -3,6 +3,7 @@ body {
       /* overflow: hidden;   */
     font-family: Arial, sans-serif;
     -webkit-text-size-adjust: 100%; /* 横向きモードでのフォントスケーリングを防ぐ */
+    background:#F1EFE7; /* 好きな色に置き換えてください */
 }
 /* 要素が画面幅を超えないようにする */
 html, body{
