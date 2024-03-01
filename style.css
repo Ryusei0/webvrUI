@@ -5,6 +5,12 @@ body {
     -webkit-text-size-adjust: 100%; /* 横向きモードでのフォントスケーリングを防ぐ */
     background:#F1EFE7; /* 好きな色に置き換えてください */
 }
+
+canvas {
+    display: block; /* canvasをブロック要素として表示 */
+    background-color: transparent; /* 背景色を透明に設定 */
+    z-index: 1; /* 必要に応じてz-indexを設定 */
+}
 /* 要素が画面幅を超えないようにする */
 html, body{
     max-width: 100vw;

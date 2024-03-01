@@ -6,6 +6,12 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 document.getElementById('sendButton').addEventListener('click', sendInput);
 document.getElementById('toggleResponse').addEventListener('click', toggleResponse);
 
+// ページの読み込みが完了した後に実行される関数を定義
+window.onload = function() {
+    init(); // 3Dシーンの初期化
+    animate(); // アニメーションループの開始
+};
+
 function resetViewport() {
     let viewportMeta = document.querySelector("meta[name=viewport]");
     if (!viewportMeta) {
@@ -563,10 +569,6 @@ function resizeCards() {
 
 // ウィンドウのリサイズイベントでカードのリサイズ関数を呼び出す
 window.addEventListener('resize', resizeCards);
-
-
-// アニメーションループの開始
-animate();
 
 function sendInput() {
     var userInput = document.getElementById('userInput').value;
