@@ -181,9 +181,25 @@ let alternateVideos = [];
 
 
 function init() {
+    // fetchVideos関数を呼び出して、動画データを取得しコンソールに表示
+    fetchVideos();
     regenerateCards(videos); // アプリケーション起動時に元のリストに基づいてカードを生成
     updateCardPositions(); // カードの位置を更新
     // その他の初期化処理...
+}
+
+async function fetchVideos() {
+    try {
+        // APIエンドポイントから動画データを非同期に取得
+        const response = await fetch('https://unity-test-air1.onrender.com/get_videos'); // 実際のAPIエンドポイントURLに置き換える
+        const videos = await response.json(); // レスポンスをJSON形式で解析
+
+        // 取得した動画データをコンソールに出力
+        console.log(videos);
+    } catch (error) {
+        // エラーが発生した場合、コンソールにエラーメッセージを出力
+        console.error('Fetching videos failed:', error);
+    }
 }
 
 function findClosestCardInFrontOfCamera() {
