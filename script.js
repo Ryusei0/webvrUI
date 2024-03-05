@@ -181,8 +181,6 @@ let alternateVideos = [];
 
 
 function init() {
-    // fetchVideos関数を呼び出して、動画データを取得しコンソールに表示
-    fetchVideos();
     regenerateCards(videos); // アプリケーション起動時に元のリストに基づいてカードを生成
     updateCardPositions(); // カードの位置を更新
     // その他の初期化処理...
