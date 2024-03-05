@@ -278,6 +278,8 @@ function playCenterMedia(index) {
     }    
     if (mediaInfo.mp3) {
         currentAudio = new Audio(mediaInfo.mp3);
+        const playbackRate = document.getElementById('playbackRate').value; // 再生速度を取得
+        currentAudio.playbackRate = playbackRate; // 再生速度を設定
         currentAudio.play();
         isPlaying = true; // 再生状態を更新
         if (playButton.textContent !== '停止') {
@@ -572,6 +574,7 @@ lockCameraRotation();
 // レンダリングループ
 function render() {
     requestAnimationFrame(render);
+    renderer.setClearColor(0xF1EFE7, 1); // ここで背景色を設定
     renderer.render(scene, camera);
 }
 
@@ -608,6 +611,8 @@ function sendInput() {
         // 音声URLが応答に含まれている場合、音声を再生する
         if (data.audioUrl) {
             var audio = new Audio(data.audioUrl);
+            const playbackRate = document.getElementById('playbackRate').value; // 再生速度を取得
+            audio.playbackRate = playbackRate; // 再生速度を設定
             audio.play().catch(error => console.error('Audio play failed:', error));
         }
 
@@ -673,7 +678,7 @@ function answerposition(id, category) {
 }
 
 // カードの位置を取得
-    const cardPosition = cardPositions[matchingIndex];
+const cardPosition = cardPositions[matchingIndex];
     if (cardPosition) {
         // カードの中心からカメラまでのオフセット（半径 + 追加のオフセット）
         const cameraOffset = 8; // 半径が6なので、半径に等しい値を初期値として使用
@@ -843,6 +848,14 @@ function populateModalContent() {
     image.classList.add('modal-image'); // CSSクラスを適用
     modalBody.appendChild(image);
 }
+
+document.getElementById('playbackRate').addEventListener('change', function() {
+    const playbackRate = this.value;
+    if (currentAudio) {
+      currentAudio.playbackRate = playbackRate;
+    }
+  });  
+
 
 //document.getElementById('fullscreenButton').addEventListener('click', function() {
     //const videoPlayer = document.getElementById('videoPlayer');
