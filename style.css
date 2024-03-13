@@ -32,7 +32,7 @@ html, body{
 }
   
 /* 入力コンテナのスタイル */
-#inputContainer {
+#inputContainer, #textForm {
     position: fixed;
     bottom: 20px;
     left: 50%;

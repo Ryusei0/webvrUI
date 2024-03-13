@@ -22,10 +22,19 @@
     <img id="imageDisplay">
 </div>
 <!--<button id="fullscreenButton">全画面表示</button>-->
-    <div id="inputContainer">
-        <input type="text" id="userInput" placeholder="テキストを入力...">
-        <button id="sendButton">送信</button>
-    </div>
+<!--<form id="inputContainer" class="active">
+  <textarea id="userInput" placeholder="テキストを入力してください"></textarea><br>
+  <input type="submit" id="sendButton"value="送信">
+</form>-->
+<div id="inputContainer" class="active">
+<input type="text" id="textInput" placeholder="テキストを入力してください" />
+<button id="sendButton">送信</button>
+</div>
+
+<form id="textForm" style="display: none;">
+  <textarea id="textInput" placeholder="テキストを入力してください"></textarea><br>
+  <input type="submit" value="生成">
+</form>
 
     <div id="responseContainer">応答がここに表示されます。</div>
     <button id="toggleResponse">返答を表示</button>
@@ -71,6 +80,6 @@
 
 
     <script src="script.js" type="module"></script>
-    
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js" crossorigin="anonymous"></script>
 </body>
 </html>

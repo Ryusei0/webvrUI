@@ -3,7 +3,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-document.getElementById('sendButton').addEventListener('click', sendInput);
 document.getElementById('toggleResponse').addEventListener('click', toggleResponse);
 
 // ページの読み込みが完了した後に実行される関数を定義
@@ -493,14 +492,6 @@ function lockCameraRotation() {
     controls.maxPolarAngle = Math.PI / 2; // 水平面のみ
     isCameraLocked = true;
 }
-
-// カメラの垂直回転の制限を解除する
-function unlockCameraRotation() {
-    controls.minPolarAngle = 0; // 制限なし
-    controls.maxPolarAngle = Math.PI; // 制限なし
-    isCameraLocked = false;
-}
-
 // モデルがカメラを見続けるようにする
 function ensureModelFacesCamera() {
     scene.traverse(function (node) {
@@ -509,18 +500,6 @@ function ensureModelFacesCamera() {
         }
     });
 }
-
-
-// 機能の有効/無効を切り替えるボタンの追加
-document.getElementById('lockCameraButton').addEventListener('click', function() {
-    if (isCameraLocked) {
-        unlockCameraRotation();
-        this.textContent = 'カメラの回転制限を解除';
-    } else {
-        lockCameraRotation();
-        this.textContent = 'カメラの回転を水平平面に限定';
-    }
-});
 
 // レンダリングループ
 function animate() {
@@ -573,59 +552,157 @@ function resizeCards() {
 // ウィンドウのリサイズイベントでカードのリサイズ関数を呼び出す
 window.addEventListener('resize', resizeCards);
 
-function sendInput() {
-    var userInput = document.getElementById('userInput').value;
-    var responseContainer = document.getElementById('responseContainer');
+//ここから会話リアルuniv
+let audioQueueuniv = []; // 再生待ちの音声URLを保持するキュー
+
+//document.getElementById('inputContainer').onsubmit = function(event) {
+ //   listenForAudioUrluniv();
+  //  event.preventDefault();  // フォームのデフォルト送信を防止
+ //   var userInput = document.getElementById('userInput').value;
+ //   var responseContainer = document.getElementById('responseContainer');
 
     // 送信直後にテキストボックスをクリア
-    document.getElementById('userInput').value = '';
+ //   document.getElementById('userInput').value = '';
+  //  const data = { text: userInput };
+  //  const backendUrl = 'http://127.0.0.1:8000/textuniv';
 
-    fetch('https://unity-test-air1.onrender.com/process_query', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({input_text: userInput})
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
+ //   fetch(backendUrl, {
+   //   method: 'POST',
+     // headers: {
+    //      'Content-Type': 'application/json',
+ //     },
+//      body: JSON.stringify(data),
+//  })
+//  .then(response => response.json())
+//  .then(data => {
+ //     console.log('Success:', data);
+  //    responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
+ //     
+  // サーバーからの応答に基づいてさらなる処理を行う
+ //     if (data.global_contentss) {
+      // global_contentss の値を解析する（例: "id: list1,category: 当サイトについて"）
+  //      const contents = data.global_contentss.split(',').reduce((acc, current) => {
+ //      const [key, value] = current.split(':');
+  //      acc[key.trim()] = value.trim();
+  //      return acc;
+//        }, {});
 
-        // 音声URLが応答に含まれている場合、音声を再生する
-        if (data.audioUrl) {
-            var audio = new Audio(data.audioUrl);
-            const playbackRate = document.getElementById('playbackRate').value; // 再生速度を取得
-            audio.playbackRate = playbackRate; // 再生速度を設定
-            audio.play().catch(error => console.error('Audio play failed:', error));
-        }
+  //      console.log('Parsed contents:', contents);
+    // 修正後のanswerposition関数を呼び出す
+  //      answerposition(contents['id'], contents['category']);
+ //   }
+//    })
+ //  .catch((error) => {
+//      console.error('Error:', error);
+//  })
+//  .finally(() => {
+    // フォーカスを外して画面のズームをリセットする
+//    document.getElementById('userInput').blur();
 
-        // サーバーからの応答に基づいてさらなる処理を行う
-        if (data.global_contentss) {
-            // global_contentss の値を解析する（例: "id: list1,category: 当サイトについて"）
-            const contents = data.global_contentss.split(',').reduce((acc, current) => {
-                const [key, value] = current.split(':');
-                acc[key.trim()] = value.trim();
-                return acc;
-            }, {});
+    // 必要に応じてビューポートをリセットする
+ //   resetViewport();
+//});
+//};
 
-            console.log('Parsed contents:', contents);
-            // 修正後のanswerposition関数を呼び出す
-            answerposition(contents['id'], contents['category']);
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        responseContainer.textContent = 'エラーが発生しました。';  // エラーをページに表示
-    })
-    .finally(() => {
-        // フォーカスを外して画面のズームをリセットする
-        document.getElementById('userInput').blur();
+//追加したところ継続通信
+document.addEventListener('DOMContentLoaded', function() {
+    var socket = io.connect("http://127.0.0.1:8000");
 
-        // 必要に応じてビューポートをリセットする
-        resetViewport();
+    socket.on('connect', function() {
+        console.log('Connected to the server.');
+
+        // サーバーへメッセージ送信の例
+        document.getElementById('sendButton').onclick = function() {
+            var text = document.getElementById('textInput').value;
+            socket.emit('textuniv', {'text': text});
+            console.log('Sent text to the server:', text);
+            checkAndPlayAudio();
+            // 送信直後にテキストボックスをクリア
+    document.getElementById('textInput').value = '';
+        };
     });
+
+    socket.on('audio_url', function(data) {
+        console.log('Received audio URL from the server:', data.url);
+        // ここで受け取ったURLを使って何かする
+        const audioUrl = data.url; // 正しくURLを取得
+  console.log("Received audio URL: ", audioUrl);
+  queueAudiouniv(audioUrl); // 修正: 受け取ったURLをキューに追加し、再生を試みる
+    });
+    socket.on('response', function(data) {
+    console.log('Success:', data.response);
+    responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
+    if (data.global_contentss) {
+  // global_contentss の値を解析する（例: "id: list1,category: 当サイトについて"）
+    const contents = data.global_contentss.split(',').reduce((acc, current) => {
+    const [key, value] = current.split(':');
+    acc[key.trim()] = value.trim();
+    return acc;
+    }, {});
+
+    console.log('Parsed contents:', contents);
+    answerposition(contents['id'], contents['category']);
 }
+    // フォーカスを外して画面のズームをリセットする
+document.getElementById('textInput').blur();
+
+// 必要に応じてビューポートをリセットする
+resetViewport();
+});
+});
+//ここまで
+
+// 音声の再生状態を確認し、必要に応じて再生を開始する関数
+function checkAndPlayAudio() {
+    if (!isPlaying2) {
+        console.log('pretalkstart');
+        setTimeout(() => {
+            const audioFiles = [
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%88%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E3%83%BC%E3%81%86%E3%82%93%E3%81%86%E3%82%93%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%81%A3_20240313_092232_dcec76db40fe42d69b4f1d41276b1883.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%86%E3%83%BC%E3%82%93%E3%81%AA%E3%82%8B%E3%81%BB%E3%81%A8%E3%82%99%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A1%E3%82%87%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E5%BE%85%E3%81%A3%E3%81%A6%E3%81%AD_20240313_092208_c6b4304e09b447f18f997407c2ae33c4.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%86%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%82%93%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%86%E3%82%93%E3%81%86%E3%82%93_20240313_092145_735ef3f41cf64ca1bbf4cbe6065edf23.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%86%E3%82%93%E3%81%86%E3%82%93%E3%81%A1%E3%82%87%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E5%BE%85%E3%81%A3%E3%81%A6%E3%81%AD%E3%81%9D%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC_20240313_092059_9c27620ac70244a2b86d1f3d8515e68e.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%A1%E3%82%87%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E5%BE%85%E3%81%A3%E3%81%A6%E3%81%AD%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%86%E3%82%93%E3%81%86%E3%82%93_20240313_092030_e230ebdc48c84c6692e176443423dc4c.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%88%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E3%83%BC%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3_20240313_091952_caea7c56e51e44cdb2e018dd076e5a9d.mp3',
+                // 他にも追加可能
+            ];
+            // ランダムに1つ選択
+            const selectedFile = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+            queueAudiouniv(selectedFile); // 選択された音声をキューに追加
+
+        }, 1500); // 1秒遅延させてから音声を再生
+    }
+}
+
+ // オーディオをキューに追加し、再生を試みる関数
+ function queueAudiouniv(audioUrl) {
+  audioQueueuniv.push(audioUrl); // キューにURLを追加
+  if (!isPlaying2) {
+      playNextAudiouniv(); // 再生中でなければ次の音声を再生
+  }
+}
+
+// キューから次の音声を再生する関数
+function playNextAudiouniv() {
+  if (audioQueueuniv.length > 0 && !isPlaying2) {
+    isPlaying2 = true;
+    const url = audioQueueuniv.shift(); // キューから次のURLを取得し、キューから削除
+    const audio = new Audio(url);
+    audio.play().then(() => {
+      console.log(`Playing audio URL: ${url}`);
+    }).catch(error => {
+      console.error(`Error playing ${url}:`, error);
+    });
+    audio.onended = () => {
+      isPlaying2 = false; // 再生が終了したらフラグを下ろし、次の音声を再生
+      playNextAudiouniv();
+    };
+  } else if (audioQueueuniv.length === 0) {
+    isPlaying2 = false; // キューが空になったら再生中フラグを下ろす
+  }
+}
+
+// ここまで
 
 // 修正されたanswerposition関数（仮の実装）
 function answerposition(id, category) {
@@ -841,32 +918,92 @@ document.getElementById('playbackRate').addEventListener('change', function() {
   });  
 
 
-//document.getElementById('fullscreenButton').addEventListener('click', function() {
-    //const videoPlayer = document.getElementById('videoPlayer');
-    
-   // if (!document.fullscreenElement &&    // 標準
-       // !document.mozFullScreenElement && // Firefox
-       // !document.webkitFullscreenElement && // Chrome, Safari and Opera
-        //!document.msFullscreenElement) { // IE/Edge
-        // 全画面表示がアクティブでない場合、開始する
-     //   if (videoPlayer.requestFullscreen) {
-  //          videoPlayer.requestFullscreen();
-    //    } else if (videoPlayer.mozRequestFullScreen) {
-     //       videoPlayer.mozRequestFullScreen();
-    //        videoPlayer.webkitRequestFullscreen();
-     //   } else if (videoPlayer.msRequestFullscreen) {
-   //         videoPlayer.msRequestFullscreen();
-   //     }
- //   } else {
-        // 全画面表示がアクティブな場合、終了する
- //       if (document.exitFullscreen) {
- //           document.exitFullscreen();
- //       } else if (document.mozCancelFullScreen) {
- //           document.mozCancelFullScreen();
- //       } else if (document.webkitExitFullscreen) {
- //           document.webkitExitFullscreen();
- //       } else if (document.msExitFullscreen) {
-//            document.msExitFullscreen();
- //       }
-//    }
-//});
+//ここから会話リアル
+
+// 切り替えボタンのクリックイベントリスナーを設定
+document.getElementById('lockCameraButton').addEventListener('click', function() {
+    // 各要素を取得
+    var inputContainer = document.getElementById('inputContainer');
+    var textForm = document.getElementById('textForm');
+    listenForAudioUrl();
+
+    // inputContainerとtextFormの表示状態を切り替える
+    if (window.getComputedStyle(inputContainer).display === 'none') {
+        inputContainer.style.display = 'flex'; // inputContainerを表示
+        textForm.style.display = 'none'; // textFormを非表示
+    } else {
+        inputContainer.style.display = 'none'; // inputContainerを非表示
+        textForm.style.display = 'flex'; // textFormを表示
+    }
+});
+
+let audioQueue = []; // 再生待ちの音声URLを保持するキュー
+let isPlaying2 = false; // 現在再生中かどうかを示すフラグ
+
+document.getElementById('textForm').onsubmit = function(event) {
+    event.preventDefault();  // フォームのデフォルト送信を防止
+    const textInput = document.getElementById('textInput').value;
+    const data = { text: textInput };
+    const backendUrl = 'http://127.0.0.1:8000/text';
+
+    fetch(backendUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('Success:', data);
+  })
+  .catch((error) => {
+      console.error('Error:', error);
+  })
+};
+
+function listenForAudioUrl() {
+    const eventSourceUrl = 'http://127.0.0.1:8000/events';
+    const eventSource = new EventSource(eventSourceUrl);
+    eventSource.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      const audioUrl = data.url; // 正しくURLを取得
+      console.log("Received audio URL: ", audioUrl);
+      queueAudio(audioUrl); // 修正: 受け取ったURLをキューに追加し、再生を試みる
+  };  
+
+    eventSource.onerror = function(event) {
+        console.error("EventSource failed.");
+        eventSource.close();  // エラーが発生したら接続を閉じる
+    };
+}
+
+ // オーディオをキューに追加し、再生を試みる関数
+ function queueAudio(audioUrl) {
+  audioQueue.push(audioUrl); // キューにURLを追加
+  if (!isPlaying2) {
+      playNextAudio(); // 再生中でなければ次の音声を再生
+  }
+}
+
+// キューから次の音声を再生する関数
+function playNextAudio() {
+  if (audioQueue.length > 0 && !isPlaying2) {
+    isPlaying2 = true;
+    const url = audioQueue.shift(); // キューから次のURLを取得し、キューから削除
+    const audio = new Audio(url);
+    audio.play().then(() => {
+      console.log(`Playing audio URL: ${url}`);
+    }).catch(error => {
+      console.error(`Error playing ${url}:`, error);
+    });
+    audio.onended = () => {
+      isPlaying2 = false; // 再生が終了したらフラグを下ろし、次の音声を再生
+      playNextAudio();
+    };
+  } else if (audioQueue.length === 0) {
+    isPlaying2 = false; // キューが空になったら再生中フラグを下ろす
+  }
+}
+
+// ここまで
