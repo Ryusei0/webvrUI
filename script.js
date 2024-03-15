@@ -5,6 +5,8 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 document.getElementById('toggleResponse').addEventListener('click', toggleResponse);
 
+let Id; // グローバルスコープでuserIdを宣言
+
 // ページの読み込みが完了した後に実行される関数を定義
 window.onload = function() {
     init(); // 3Dシーンの初期化
@@ -473,13 +475,13 @@ document.getElementById('changeListButton').addEventListener('click', () => {
     // ボタンのテキストと表示状態を切り替える
     if (isOriginalList) {
         document.getElementById('playCenterVideo').style.display = 'none'; // 「再生」ボタンを非表示にする
-        document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
+       // document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
         document.getElementById('changeListButton').textContent = '詳細';
         stopMedia(); // ユーザーが停止を要求
     } else {
         document.getElementById('playCenterVideo').style.display = 'block'; // 「再生」ボタンを表示する
         document.getElementById('changeListButton').textContent = '戻る'; // ボタンのテキストを「戻る」に変更
-        document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
+     //   document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
     }
 });
 
@@ -606,7 +608,44 @@ let audioQueueuniv = []; // 再生待ちの音声URLを保持するキュー
 
 //追加したところ継続通信
 document.addEventListener('DOMContentLoaded', function() {
-    var socket = io.connect("wss://unity-test-air1.onrender.com");
+    // IDを生成する関数
+    function generateUserId() {
+        return crypto.randomUUID();
+    }
+
+    // Socket.IOを使用して特定のユーザーIDに基づくイベントをリッスンする関数
+    function setupEventListenerForUser(Id) {
+        console.log(`Listening on audio_url_${Id}`);
+        socket.on(`audio_url_${Id}`, function(data) {
+            console.log('Received audio URL from the server:', data.url);
+            // ここで受け取ったURLを使って何かする
+            const audioUrl = data.url; // 正しくURLを取得
+      console.log("Received audio URL: ", audioUrl);
+      queueAudiouniv(audioUrl); // 修正: 受け取ったURLをキューに追加し、再生を試みる
+        });
+        socket.on(`response_${Id}`, function(data) {
+            console.log('Success:', data.response);
+            responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
+            if (data.global_contentss) {
+          // global_contentss の値を解析する（例: "id: list1,category: 当サイトについて"）
+            const contents = data.global_contentss.split(',').reduce((acc, current) => {
+            const [key, value] = current.split(':');
+            acc[key.trim()] = value.trim();
+            return acc;
+            }, {});
+        
+            console.log('Parsed contents:', contents);
+            answerposition(contents['id'], contents['category']);
+        }
+            // フォーカスを外して画面のズームをリセットする
+        document.getElementById('textInput').blur();
+        
+        // 必要に応じてビューポートをリセットする
+        resetViewport();
+        });
+    }
+
+    var socket = io.connect("http://127.0.0.1:8000");
 
     socket.on('connect', function() {
         console.log('Connected to the server.');
@@ -614,7 +653,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // サーバーへメッセージ送信の例
         document.getElementById('sendButton').onclick = function() {
             var text = document.getElementById('textInput').value;
-            socket.emit('textuniv', {'text': text});
+            socket.emit('textuniv', { 'text': text, 'id': Id });
             console.log('Sent text to the server:', text);
             checkAndPlayAudio();
             // 送信直後にテキストボックスをクリア
@@ -622,33 +661,11 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     });
 
-    socket.on('audio_url', function(data) {
-        console.log('Received audio URL from the server:', data.url);
-        // ここで受け取ったURLを使って何かする
-        const audioUrl = data.url; // 正しくURLを取得
-  console.log("Received audio URL: ", audioUrl);
-  queueAudiouniv(audioUrl); // 修正: 受け取ったURLをキューに追加し、再生を試みる
-    });
-    socket.on('response', function(data) {
-    console.log('Success:', data.response);
-    responseContainer.textContent = '応答: ' + data.response; // 応答をページに表示
-    if (data.global_contentss) {
-  // global_contentss の値を解析する（例: "id: list1,category: 当サイトについて"）
-    const contents = data.global_contentss.split(',').reduce((acc, current) => {
-    const [key, value] = current.split(':');
-    acc[key.trim()] = value.trim();
-    return acc;
-    }, {});
+    // ユーザーIDの生成とイベントリスナー設定
+    const Id = generateUserId();
+    console.log(`Generated User ID: ${Id}`);
+    setupEventListenerForUser(Id);
 
-    console.log('Parsed contents:', contents);
-    answerposition(contents['id'], contents['category']);
-}
-    // フォーカスを外して画面のズームをリセットする
-document.getElementById('textInput').blur();
-
-// 必要に応じてビューポートをリセットする
-resetViewport();
-});
 });
 //ここまで
 
@@ -758,13 +775,13 @@ const cardPosition = cardPositions[matchingIndex];
     // ボタンのテキストと表示状態を切り替える
     if (isOriginalList) {
         document.getElementById('playCenterVideo').style.display = 'none'; // 「再生」ボタンを非表示にする
-        document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
+      //  document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
         document.getElementById('changeListButton').textContent = '詳細';
         stopMedia(); // ユーザーが停止を要求
     } else {
         document.getElementById('playCenterVideo').style.display = 'block'; // 「再生」ボタンを表示する
         document.getElementById('changeListButton').textContent = '戻る'; // ボタンのテキストを「戻る」に変更
-        document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
+       // document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
     }
 };
 
@@ -809,12 +826,12 @@ function toggleResponse() {
                 // ボタンのテキストと表示状態を切り替える
     if (isOriginalList) {
         document.getElementById('playCenterVideo').style.display = 'none'; // 「再生」ボタンを非表示にする
-        document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
+       // document.getElementById('showModalButton').style.display = 'none'; // 「詳しく見る」ボタンを非表示にする
         document.getElementById('changeListButton').textContent = '詳細';
     } else {
         document.getElementById('playCenterVideo').style.display = 'block'; // 「再生」ボタンを表示する
         document.getElementById('changeListButton').textContent = '戻る'; // ボタンのテキストを「戻る」に変更
-        document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
+        //document.getElementById('showModalButton').style.display = 'block'; // 「戻る」ボタンを表示する
     }
             } else {
                 playCenterMedia(selectedVideoIndex); 
@@ -827,18 +844,23 @@ function toggleResponse() {
     });
 }
 
-// メニューの表示/非表示を切り替える関数
 function toggleMenu() {
     const menuallContent = document.getElementById('menuallContent');
     const menuContent = document.getElementById('menuContent');
+    const hamburger = document.querySelector('.hamburger-menu');
+    
+    // メニューとハンバーガーメニューの表示を切り替える
     if (menuallContent.style.display === 'block') {
-        menuallContent.style.display = 'none';
-        menuContent.style.display = 'none';
+      menuallContent.style.display = 'none';
+      menuContent.style.display = 'none';
+      hamburger.classList.remove('change'); // ハンバーガーメニューを元に戻す
     } else {
-        menuallContent.style.display = 'block';
-        menuContent.style.display = 'block';
+      menuallContent.style.display = 'block';
+      menuContent.style.display = 'block';
+      hamburger.classList.add('change'); // ハンバーガーメニューをXマークに変更する
     }
-}
+  }
+  
 
 // ハンバーガーメニューをクリックしたときのイベントリスナー
 document.querySelector('.hamburger-menu').addEventListener('click', function() {
@@ -850,18 +872,18 @@ document.querySelector('.hamburger-menu').addEventListener('click', function() {
 window.addEventListener('load', init);
 
 // モーダルの表示・非表示の制御にボタンの表示状態を追加
-document.getElementById('showModalButton').addEventListener('click', function() {
-    document.getElementById('myModal').style.display = 'block';
+//document.getElementById('showModalButton').addEventListener('click', function() {
+   // document.getElementById('myModal').style.display = 'block';
     // モーダルを表示するボタンを非表示にする
-    this.style.display = 'none';
-    populateModalContent();
-});
+  //  this.style.display = 'none';
+ //   populateModalContent();
+//});
 
-document.querySelector('.close').addEventListener('click', function() {
-    document.getElementById('myModal').style.display = 'none';
+//document.querySelector('.close').addEventListener('click', function() {
+  //  document.getElementById('myModal').style.display = 'none';
     // モーダルを表示するボタンを再表示する
-    document.getElementById('showModalButton').style.display = 'block';
-});
+ //   document.getElementById('showModalButton').style.display = 'block';
+//});
 
 window.addEventListener('click', function(event) {
     if (event.target == document.getElementById('myModal')) {
@@ -892,23 +914,23 @@ function updateAlternateVideosBasedOnList() {
 }
 
 // モーダルに文字と画像を追加する関数
-function populateModalContent() {
-    const modalBody = document.getElementById('modalBody');
-    modalBody.innerHTML = ''; // コンテンツをクリア
+//function populateModalContent() {
+   // const modalBody = document.getElementById('modalBody');
+  //  modalBody.innerHTML = ''; // コンテンツをクリア
 
     // 文字の追加
-    const textContent = document.createElement('p');
-    textContent.textContent = 'ここにモーダルのテキストが表示されます。';
-    textContent.style.color = ' white';
-    modalBody.appendChild(textContent);
+ //   const textContent = document.createElement('p');
+  //  textContent.textContent = 'ここにモーダルのテキストが表示されます。';
+ //   textContent.style.color = ' white';
+  //  modalBody.appendChild(textContent);
 
     // 画像の追加
-    const image = document.createElement('img');
-    image.src = 'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg';
-    image.alt = '画像の説明';
-    image.classList.add('modal-image'); // CSSクラスを適用
-    modalBody.appendChild(image);
-}
+ //   const image = document.createElement('img');
+ //   image.src = 'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/image/%E4%BA%8B%E6%A5%AD%E8%A9%B3%E7%B4%B0.jpg';
+ //   image.alt = '画像の説明';
+  //  image.classList.add('modal-image'); // CSSクラスを適用
+ //   modalBody.appendChild(image);
+//}
 
 document.getElementById('playbackRate').addEventListener('change', function() {
     const playbackRate = this.value;
@@ -921,89 +943,67 @@ document.getElementById('playbackRate').addEventListener('change', function() {
 //ここから会話リアル
 
 // 切り替えボタンのクリックイベントリスナーを設定
-document.getElementById('lockCameraButton').addEventListener('click', function() {
+//document.getElementById('lockCameraButton').addEventListener('click', function() {
     // 各要素を取得
-    var inputContainer = document.getElementById('inputContainer');
-    var textForm = document.getElementById('textForm');
-    listenForAudioUrl();
+   // var inputContainer = document.getElementById('inputContainer');
+  //  var textForm = document.getElementById('textForm');
+  //  listenForAudioUrl();
 
     // inputContainerとtextFormの表示状態を切り替える
-    if (window.getComputedStyle(inputContainer).display === 'none') {
-        inputContainer.style.display = 'flex'; // inputContainerを表示
-        textForm.style.display = 'none'; // textFormを非表示
-    } else {
-        inputContainer.style.display = 'none'; // inputContainerを非表示
-        textForm.style.display = 'flex'; // textFormを表示
-    }
-});
+  //  if (window.getComputedStyle(inputContainer).display === 'none') {
+   //     inputContainer.style.display = 'flex'; // inputContainerを表示
+   //     textForm.style.display = 'none'; // textFormを非表示
+ //   } else {
+   //     inputContainer.style.display = 'none'; // inputContainerを非表示
+   //     textForm.style.display = 'flex'; // textFormを表示
+ //   }
+//});
 
 let audioQueue = []; // 再生待ちの音声URLを保持するキュー
 let isPlaying2 = false; // 現在再生中かどうかを示すフラグ
 
-document.getElementById('textForm').onsubmit = function(event) {
-    event.preventDefault();  // フォームのデフォルト送信を防止
-    const textInput = document.getElementById('textInput').value;
-    const data = { text: textInput };
-    const backendUrl = 'http://127.0.0.1:8000/text';
+//document.getElementById('textForm').onsubmit = function(event) {
+//    event.preventDefault();  // フォームのデフォルト送信を防止
+//    const textInput = document.getElementById('textInput').value;
+ //   const data = { text: textInput };
+  //  const backendUrl = 'http://127.0.0.1:8000/text';
 
-    fetch(backendUrl, {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-  })
-  .then(response => response.json())
-  .then(data => {
-      console.log('Success:', data);
-  })
-  .catch((error) => {
-      console.error('Error:', error);
-  })
-};
+  //  fetch(backendUrl, {
+  //    method: 'POST',
+  //    headers: {
+   //       'Content-Type': 'application/json',
+  //    },
+  //    body: JSON.stringify(data),
+ // })
+ // .then(response => response.json())
+ // .then(data => {
+//      console.log('Success:', data);
+//  })
+//  .catch((error) => {
+//      console.error('Error:', error);
+//  })
+//};
 
-function listenForAudioUrl() {
-    const eventSourceUrl = 'http://127.0.0.1:8000/events';
-    const eventSource = new EventSource(eventSourceUrl);
-    eventSource.onmessage = function(event) {
-      const data = JSON.parse(event.data);
-      const audioUrl = data.url; // 正しくURLを取得
-      console.log("Received audio URL: ", audioUrl);
-      queueAudio(audioUrl); // 修正: 受け取ったURLをキューに追加し、再生を試みる
-  };  
+//function listenForAudioUrl() {
+ //   const eventSourceUrl = 'http://127.0.0.1:8000/events';
+ //   const eventSource = new EventSource(eventSourceUrl);
+   // eventSource.onmessage = function(event) {
+     // const data = JSON.parse(event.data);
+      //const audioUrl = data.url; // 正しくURLを取得
+//     console.log("Received audio URL: ", audioUrl);
+  //    queueAudio(audioUrl); // 修正: 受け取ったURLをキューに追加し、再生を試みる
+ // };  
 
-    eventSource.onerror = function(event) {
-        console.error("EventSource failed.");
-        eventSource.close();  // エラーが発生したら接続を閉じる
-    };
-}
+//    eventSource.onerror = function(event) {
+  //      console.error("EventSource failed.");
+    //    eventSource.close();  // エラーが発生したら接続を閉じる
+   // };
+//}
 
  // オーディオをキューに追加し、再生を試みる関数
- function queueAudio(audioUrl) {
-  audioQueue.push(audioUrl); // キューにURLを追加
-  if (!isPlaying2) {
-      playNextAudio(); // 再生中でなければ次の音声を再生
-  }
-}
-
-// キューから次の音声を再生する関数
-function playNextAudio() {
-  if (audioQueue.length > 0 && !isPlaying2) {
-    isPlaying2 = true;
-    const url = audioQueue.shift(); // キューから次のURLを取得し、キューから削除
-    const audio = new Audio(url);
-    audio.play().then(() => {
-      console.log(`Playing audio URL: ${url}`);
-    }).catch(error => {
-      console.error(`Error playing ${url}:`, error);
-    });
-    audio.onended = () => {
-      isPlaying2 = false; // 再生が終了したらフラグを下ろし、次の音声を再生
-      playNextAudio();
-    };
-  } else if (audioQueue.length === 0) {
-    isPlaying2 = false; // キューが空になったら再生中フラグを下ろす
-  }
-}
-
-// ここまで
+// function queueAudio(audioUrl) {
+//  audioQueue.push(audioUrl); // キューにURLを追加
+//  if (!isPlaying2) {
+//      playNextAudio(); // 再生中でなければ次の音声を再生
+ // }
+//}
