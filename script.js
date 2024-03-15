@@ -612,7 +612,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateUserId() {
         return crypto.randomUUID();
     }
-
+    startPlayAudio()
     // Socket.IOを使用して特定のユーザーIDに基づくイベントをリッスンする関数
     function setupEventListenerForUser(Id) {
         console.log(`Listening on audio_url_${Id}`);
@@ -669,19 +669,30 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 //ここまで
 
+function startPlayAudio() {
+    if (!isPlaying2) {
+        console.log('pretalkstart');
+       
+            const audioFiles = [
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/start_20240315_103059_61e542b0574a48be80c3f6bef201a6f5.mp3',
+                
+            ];
+            // ランダムに1つ選択
+            const selectedFile = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+            queueAudiouniv(selectedFile); // 選択された音声をキューに追加
+    }
+}
 // 音声の再生状態を確認し、必要に応じて再生を開始する関数
 function checkAndPlayAudio() {
     if (!isPlaying2) {
         console.log('pretalkstart');
         setTimeout(() => {
             const audioFiles = [
-                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%88%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E3%83%BC%E3%81%86%E3%82%93%E3%81%86%E3%82%93%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%81%A3_20240313_092232_dcec76db40fe42d69b4f1d41276b1883.mp3',
-                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%86%E3%83%BC%E3%82%93%E3%81%AA%E3%82%8B%E3%81%BB%E3%81%A8%E3%82%99%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A1%E3%82%87%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E5%BE%85%E3%81%A3%E3%81%A6%E3%81%AD_20240313_092208_c6b4304e09b447f18f997407c2ae33c4.mp3',
-                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%86%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%82%93%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%86%E3%82%93%E3%81%86%E3%82%93_20240313_092145_735ef3f41cf64ca1bbf4cbe6065edf23.mp3',
-                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%86%E3%82%93%E3%81%86%E3%82%93%E3%81%A1%E3%82%87%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E5%BE%85%E3%81%A3%E3%81%A6%E3%81%AD%E3%81%9D%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC_20240313_092059_9c27620ac70244a2b86d1f3d8515e68e.mp3',
-                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%A1%E3%82%87%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E5%BE%85%E3%81%A3%E3%81%A6%E3%81%AD%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%86%E3%82%93%E3%81%86%E3%82%93_20240313_092030_e230ebdc48c84c6692e176443423dc4c.mp3',
-                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/%E3%81%88%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3%E3%81%A8%E3%83%BC%E3%81%9D%E3%81%86%E3%81%9F%E3%82%99%E3%82%88%E3%81%AD%E3%83%BC%E3%83%BC%E3%83%BC%E3%81%A3_20240313_091952_caea7c56e51e44cdb2e018dd076e5a9d.mp3',
-                // 他にも追加可能
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/part4_20240315_102045_eeea879d2ac748aeb950395942c035e2.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/part3_20240315_102738_d49fa4973e23425a8f2035264796fe86.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/part2_20240315_102009_b6d632f8c6c14faaa99c2377375cc0f4.mp3',
+                'https://s3.ap-northeast-3.amazonaws.com/testunity1.0/pretalk/part%EF%BC%91_20240315_101942_6a969e73740b464babd32b177520a6b7.mp3',
+                
             ];
             // ランダムに1つ選択
             const selectedFile = audioFiles[Math.floor(Math.random() * audioFiles.length)];
