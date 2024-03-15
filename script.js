@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    var socket = io.connect("http://127.0.0.1:8000");
+    var socket = io.connect("https://unity-test-air1.onrender.com");
 
     socket.on('connect', function() {
         console.log('Connected to the server.');
